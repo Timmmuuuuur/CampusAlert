@@ -1,1 +1,1 @@
-# CampusAlert!!!!!
+# CampusAlert
