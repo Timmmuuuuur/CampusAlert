@@ -21,3 +21,10 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/
+  fonts:
+    - family: Overpass
+      fonts:
+        - asset: assets/fonts/overpass/Overpass-Italic-VariableFont_wght.ttf
+        - asset: assets/fonts/overpass/Overpass-VariableFont_wght.ttf

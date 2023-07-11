@@ -1,49 +1,81 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'emergency_alert_page.dart';
+
 void main() {
-  runApp(MyApp());
+  runApp(App());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class App extends StatelessWidget {
+  const App({super.key});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => MyAppState(),
+      create: (context) => AppState(),
       child: MaterialApp(
         title: 'CampusAlert',
         theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
-        ),
-        home: MyHomePage(),
+            useMaterial3: true,
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
+            fontFamily: 'Overpass'),
+        home: NavigationRoot(),
       ),
     );
   }
 }
 
-class MyAppState extends ChangeNotifier {
-  var current = 1;
+class AppState extends ChangeNotifier {
+  var count = 1;
+  var selectedPageIndex = 0;
+
+  void increment() {
+    count += 1;
+    notifyListeners();
+  }
+
+  void selectPage(int index) {
+    selectedPageIndex = index;
+    notifyListeners();
+  }
 }
 
-class MyHomePage extends StatelessWidget {
+class NavigationRoot extends StatelessWidget {
+  static const List<Widget> _pages = <Widget>[
+    EmergencyAlertPage(),
+    Icon(
+      Icons.camera,
+      size: 150,
+    ),
+    Icon(
+      Icons.chat,
+      size: 150,
+    ),
+  ];
+
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
+    var appState = context.watch<AppState>();
+    var count = appState.count;
 
     return Scaffold(
-      body: Column(
-        children: [
-          Text('A random idea:'),
-          Text(appState.current.toString()),
-          ElevatedButton(
-            onPressed: () {
-              print('button pressed!');
-              appState.current += 1;
-            },
-            child: Text('Next'),
+      body: _pages[appState.selectedPageIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: appState.selectedPageIndex,
+        onTap: (int index) => appState.selectPage(index),
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.sos_outlined),
+            label: 'EMERGENCY ALERT',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.notification_important),
+            label: 'NOTICES',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_outlined),
+            label: 'ACCOUNT',
           ),
         ],
       ),
