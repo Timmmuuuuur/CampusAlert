@@ -1,7 +1,0 @@
-Report_number,Date,Status,Emergency,Crime_id,Location_id
-123454,01-Jan-23,complete,True,theft_,123
-2345,24-Apr-23,incomplete,False,theftx,234
-3456,12-Feb-22,incomplete,True,theft,35
-4567,31-May-23,complete,False,stabbing,46
-5678,19-Dec-22,complete,True,assault,578
-6789,18-Jul-22,incomplete,True,fire,986
