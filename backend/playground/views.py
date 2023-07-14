@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from .models import report, location, coordinate, crime
+from .models import Report, Location, Coordinate, Crime
 import random
 from django.views.generic import View
 
@@ -44,10 +44,10 @@ def index(request):
     # obj = report(report_num = random.randrange(20), status = "complete", emergency = False)
     # obj.save()
 
-    num_crimes = crime.objects.count()
-    num_location = location.objects.filter(Campus='main').count()
-    num_reports = report.objects.count()
-    num_coordinates = coordinate.objects.filter(Latitude='12.345').count()
+    num_crimes = Crime.objects.count()
+    num_location = Location.objects.filter(campus='main').count()
+    num_reports = Report.objects.count()
+    num_coordinates = Coordinate.objects.filter(latitude='12.345').count()
 
     num_visits = request.session.get('num_visits', 0)
     request.session['num_visits'] = num_visits + 1
