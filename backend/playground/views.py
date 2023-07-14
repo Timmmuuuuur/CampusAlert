@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from .models import Report, Location, Coordinate, Crime
+from emergency.models import Report, Location, Coordinate, Crime
 import random
 from django.views.generic import View
 

@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "playground.apps.PlaygroundConfig",
     "debug_toolbar",
-    "rest_framework"
+    "rest_framework",
+    "emergency"
 ]
 
 MIDDLEWARE = [
