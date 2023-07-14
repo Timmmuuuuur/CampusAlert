@@ -9,7 +9,7 @@ def data_load(apps, schema_editor):
     Location = apps.get_model("playground", "location")
     Coordinate = apps.get_model("playground", "Coordinate")
 
-    with open('/Users/jankostrizak/Documents/fydp/foo/storefront/playground/migrations/coordinates.csv') as csv_file:
+    with open('./playground/migrations/coordinates.csv') as csv_file:
         reader = csv.reader(csv_file)
         header = next(reader)
 
@@ -22,7 +22,7 @@ def data_load(apps, schema_editor):
 
         Coordinate.objects.bulk_create(coordinates)
     
-    with open('/Users/jankostrizak/Documents/fydp/foo/storefront/playground/migrations/locations.csv') as csv_file:
+    with open('./playground/migrations/locations.csv') as csv_file:
         reader = csv.reader(csv_file)
         header = next(reader)
 
@@ -35,7 +35,7 @@ def data_load(apps, schema_editor):
 
         Location.objects.bulk_create(locations)
     
-    with open('/Users/jankostrizak/Documents/fydp/foo/storefront/playground/migrations/reports.csv') as csv_file:
+    with open('./playground/migrations/reports.csv') as csv_file:
         reader = csv.reader(csv_file)
         header = next(reader)
 
