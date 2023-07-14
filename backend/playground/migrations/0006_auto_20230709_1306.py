@@ -9,7 +9,7 @@ def data_load(apps, schema_editor):
     # Location = apps.get_model("playground", "location")
     # Coordinate = apps.get_model("playground", "Coordinate")
 
-    with open('/Users/jankostrizak/Documents/fydp/foo/storefront/playground/migrations/crimes.csv') as csv_file:
+    with open('./playground/migrations/crimes.csv') as csv_file:
         reader = csv.reader(csv_file)
         header = next(reader)
 
