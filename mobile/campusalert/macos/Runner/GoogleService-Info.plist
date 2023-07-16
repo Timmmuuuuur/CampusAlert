@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>1093945962106-mpr91a8s0b5gjjgmqr3lsfbnqd50b8ne.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.1093945962106-mpr91a8s0b5gjjgmqr3lsfbnqd50b8ne</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDf1sc_D6dssBt-h72FFO0O5pETAfe-UTs</string>
+	<key>GCM_SENDER_ID</key>
+	<string>1093945962106</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.campusalert.RunnerTests</string>
+	<key>PROJECT_ID</key>
+	<string>campusalert-ece498</string>
+	<key>STORAGE_BUCKET</key>
+	<string>campusalert-ece498.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:1093945962106:ios:1f561e97c3a8d1475555c3</string>
+</dict>
+</plist>
