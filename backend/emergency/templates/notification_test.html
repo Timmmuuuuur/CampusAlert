@@ -1,0 +1,11 @@
+<!-- my_template.html -->
+<form method="post">
+    {% csrf_token %}
+    Notification title
+    <input type="text" name="notification-title" placeholder="Value 1">
+
+    Notification body
+    <input type="text" name="notification-body" placeholder="Value 2">
+    <button type="submit">Send notification to everyone</button>
+</form>
+  
