@@ -7,9 +7,10 @@ def call_notification(title, body):
     message = Message(
         notification=Notification(title=title, body=body, image="url")
     )
-    device = FCMDevice.objects.all().first()
+    devices = FCMDevice.objects.all()
 
-    if device is not None:
+    for device in devices:
+        print(device)
         device.send_message(message)
 
 
