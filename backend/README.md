@@ -38,8 +38,11 @@ Every time you update the field name or add new fields to a model, you MUST run 
 
 ```py
 python3 manage.py makemigrations
+python3 manage.py migrate
 ```
 - and accept each rename correctly in the terminal prompts
+
+### Create an admin account
 
 
 
