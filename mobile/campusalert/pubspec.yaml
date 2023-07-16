@@ -7,10 +7,12 @@ environment:
   sdk: '>=3.1.0-89.0.dev <4.0.0'
 
 dependencies:
+  firebase_core: ^2.15.0
+  firebase_messaging: ^14.6.5
   flutter:
     sdk: flutter
-  
   provider: ^6.0.0
+  rxdart: ^0.27.7
 
 
 dev_dependencies:

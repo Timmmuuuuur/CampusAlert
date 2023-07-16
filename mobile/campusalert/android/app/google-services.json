@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "1093945962106",
+    "project_id": "campusalert-ece498",
+    "storage_bucket": "campusalert-ece498.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1093945962106:android:8a97cc073fb518ae5555c3",
+        "android_client_info": {
+          "package_name": "ca.uwaterloo.ece498.campusalert"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1093945962106-f5khm4dta8p529um67m7nnco3ef9romg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD8gPDmrklPmbFwbeCmSb30FOJdv0eGzXI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1093945962106-f5khm4dta8p529um67m7nnco3ef9romg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1093945962106:android:ba27eec334f1ed225555c3",
+        "android_client_info": {
+          "package_name": "com.example.campusalert"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1093945962106-f5khm4dta8p529um67m7nnco3ef9romg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD8gPDmrklPmbFwbeCmSb30FOJdv0eGzXI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1093945962106-f5khm4dta8p529um67m7nnco3ef9romg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

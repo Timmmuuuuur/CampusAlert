@@ -22,6 +22,8 @@ class EmergencyAlertPage extends StatelessWidget {
               color: Colors.red,
               fontWeight: FontWeight.w900,
             )),
+        Text(appState.appContext.fcmToken ?? "[No token]"),
+        Text(appState.lastMessage),
         DragActivationComponent(
           onActivate: () {
             print("Swipping done!");
