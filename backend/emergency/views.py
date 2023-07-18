@@ -10,7 +10,6 @@ def call_notification(title, body):
     devices = FCMDevice.objects.all()
 
     for device in devices:
-        print(device)
         device.send_message(message)
 
 
