@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:campusalert/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -7,10 +10,10 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'package:rxdart/rxdart.dart';
 
+import 'login_page.dart';
 import 'emergency_alert_page.dart';
 
 Future<void> main() async {
-
   // Flutter setup
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -73,9 +76,7 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print('Message data: ${message.data}');
   print('Message notification: ${message.notification?.title}');
   print('Message notification: ${message.notification?.body}');
-
 }
-
 
 class AppContext {
   final FirebaseMessaging messaging;
@@ -110,11 +111,15 @@ class App extends StatelessWidget {
       create: (context) => AppState(appContext: appContext),
       child: MaterialApp(
         title: 'CampusAlert',
+        initialRoute: '/',
+        routes: {
+          '/': (context) => LoginPage(),
+          '/main_app': (context) => NavigationRoot(),
+        },
         theme: ThemeData(
             useMaterial3: true,
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
             fontFamily: 'Overpass'),
-        home: NavigationRoot(),
       ),
     );
   }
@@ -131,6 +136,7 @@ class AppState extends ChangeNotifier {
   var count = 1;
   var selectedPageIndex = 0;
 
+  APIService? apiService;
   String lastMessage = "";
 
   void increment() {
@@ -141,6 +147,18 @@ class AppState extends ChangeNotifier {
   void selectPage(int index) {
     selectedPageIndex = index;
     notifyListeners();
+  }
+
+  Future<bool> login(String username, String password) async {
+    apiService = APIService(username);
+
+    try {
+      await apiService!.login(password);
+    } on HttpException {
+      return false;
+    }
+
+    return true;
   }
 
   void onNewMessage(message) {
