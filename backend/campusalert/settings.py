@@ -26,7 +26,10 @@ SECRET_KEY = "django-insecure-b415^1au71&_p4(a57i^94f*)6&p7x%7a%wh9myl0q5utr%58d
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '10.0.2.2', # Android localhost
+    'localhost'
+]
 
 
 # Application definition
@@ -39,11 +42,24 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.sessions",
     "playground.apps.PlaygroundConfig",
+    "emergency",
+    "authentication",
     "debug_toolbar",
     "rest_framework",
-    "emergency",
-    "fcm_django"
+    "fcm_django",
+    "rest_framework_jwt"
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        # Other authentication classes if any
+    ],
+}
+
+JWT_AUTH = {
+    'JWT_ALLOW_REFRESH': True,
+}
 
 MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",  # Manages sessions across requests

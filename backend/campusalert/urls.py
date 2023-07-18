@@ -24,6 +24,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path('playground/', include('playground.urls')),
     path('emergency/', include('emergency.urls')),
+    path('auth/', include('authentication.urls')),
     path('', RedirectView.as_view(url='playground/')), 
     path("__debug__/", include("debug_toolbar.urls"))
 ]
