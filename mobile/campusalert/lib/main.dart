@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:campusalert/api_service.dart';
+import 'package:campusalert/building_prompt_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -12,6 +13,8 @@ import 'package:rxdart/rxdart.dart';
 
 import 'login_page.dart';
 import 'emergency_alert_page.dart';
+import 'building_prompt_page.dart';
+import 'floor_prompt_page.dart';
 
 Future<void> main() async {
   // Flutter setup
@@ -177,6 +180,8 @@ class AppState extends ChangeNotifier {
 class NavigationRoot extends StatelessWidget {
   static const List<Widget> _pages = <Widget>[
     EmergencyAlertPage(),
+    // BuildingPromptPage(),
+    // FloorPromptPage(),
     Icon(
       Icons.camera,
       size: 150,
