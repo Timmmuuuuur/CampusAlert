@@ -21,6 +21,7 @@ class VerifyAuthToken(VerifyJSONWebToken):
     """Custom authentication view for verifying JWT tokens."""
     pass
 
+# Ideally, we would want to refresh the user secret to invalidate all tokens. But that is overly complicated. It's probably better just for the token to decay on its own.
 class LogoutUser(APIView):
     """View for logging out a user."""
     permission_classes = [IsAuthenticated]

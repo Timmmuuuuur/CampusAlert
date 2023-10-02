@@ -1,0 +1,100 @@
+<!-- upload_floor_plan.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Floor</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+</head>
+<body>
+    <h1>Upload Floor</h1>
+
+    <form id="form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div id="map" style="width: 100%; height: 400px;"></div>
+
+    
+        <!-- Hidden fields for latitude and longitude -->
+        <input type="hidden" name="latitude1" id="latitude1">
+        <input type="hidden" name="longitude1" id="longitude1">
+        <input type="hidden" name="latitude2" id="latitude2">
+        <input type="hidden" name="longitude2" id="longitude2">
+
+        <input type="submit" value="Submit">
+    </form>
+
+    Layout preview:
+    <div id="image-container">
+
+    {% load static %}
+    <script src="{% static 'js/create_floor.js' %}"></script>
+
+    <div id="success-message" style="display: none;"></div>
+
+    <style>
+        #image-container > img {
+            width: 500px;
+        }
+    </style>
+
+    <script>
+        // Check if the success message exists in the context
+        var successMessage = "{{ success_message|default:'' }}";
+        if (successMessage) {
+            // Display the success message
+            document.getElementById('success-message').innerText = successMessage;
+            document.getElementById('success-message').style.display = 'block';
+        }
+
+        console.log('Baba');
+        
+        // Add an event listener to the form for the 'change' event
+        document.addEventListener('DOMContentLoaded', function () {
+            // Find the form element
+            var form = document.getElementById('form');
+            
+            // Add an event listener to the form for the 'change' event
+            form.addEventListener('change', function (event) {
+                // Check if the changed element is a select element with the name 'my_dropdown'
+                if (event.target.tagName === 'SELECT' && event.target.name === 'layout') {
+                    // Run your function here
+                    // For example, you can access the selected value like this:
+                    var selectedValue = event.target.value;
+                    console.log('Selected value:', selectedValue);
+
+                    var layoutName = event.target.querySelector('option[value="' + selectedValue + '"]').textContent;
+
+                    // Call your custom function
+                    onLayoutChange(layoutName);
+                }
+            });
+        });
+    
+        // Your custom function
+        function onLayoutChange(imageName) {
+            var baseUrl = window.location.origin;
+            var apiUrl = `${baseUrl}/emergency/floorlayout/get_image_url?name=${imageName}`;
+
+            fetch(apiUrl)
+                .then(response => {
+                    console.log(response)
+                    return response.json()})
+                .then(data => {
+                    if (data.error) {
+                        console.error(data.error);
+                    } else {
+                        var image = document.createElement('img');
+                        image.src = data.image_url;
+                        document.getElementById('image-container').appendChild(image);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+    </script>
+</body>
+</html>
