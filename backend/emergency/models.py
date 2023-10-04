@@ -55,8 +55,11 @@ class FloorLayout(models.Model):
 
 class Floor(models.Model):
     level = models.IntegerField(unique=True)
-    begin = models.ForeignKey(Coordinate, on_delete=models.CASCADE, related_name='begin')
-    end = models.ForeignKey(Coordinate, on_delete=models.CASCADE, related_name='end')
+
+    # top left
+    topleft = models.ForeignKey(Coordinate, on_delete=models.CASCADE, related_name='topleft')
+    topright = models.ForeignKey(Coordinate, on_delete=models.CASCADE, related_name='topright')
+    bottomleft = models.ForeignKey(Coordinate, on_delete=models.CASCADE, related_name='bottomleft')
     layout = models.OneToOneField(FloorLayout, on_delete=models.CASCADE, related_name='layout')
 
     class Meta:

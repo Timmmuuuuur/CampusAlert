@@ -6,7 +6,7 @@ from django.urls import reverse
 
 from django.http import JsonResponse
 
-from .models import FloorLayout
+from .models import Floor, FloorLayout, Coordinate
 
 def call_notification(title, body):
     print('Button pressed! Python function called.')
@@ -33,7 +33,31 @@ def create_floor(request):
     if request.method == 'POST':
         form = FloorForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
+            print(form.cleaned_data)
+            topleft = Coordinate.objects.create(
+                longitude=request.POST.get('longitude1'),
+                latitude=request.POST.get('latitude1')
+            )
+            topright = Coordinate.objects.create(
+                longitude=request.POST.get('longitude2'),
+                latitude=request.POST.get('latitude2')
+            )
+            bottomleft = Coordinate.objects.create(
+                longitude=request.POST.get('longitude3'),
+                latitude=request.POST.get('latitude3')
+            )
+
+            level = form.cleaned_data['level']
+            layout = form.cleaned_data['layout']
+
+            Floor.objects.create(
+                level = level,
+                layout = layout,
+                topleft = topleft,
+                topright = topright,
+                bottomleft = bottomleft,
+            )
+
             # Add a success message to the context
             context = {'form': form, 'success_message': 'Successfully added!'}
             return render(request, 'create_floor.html', context)

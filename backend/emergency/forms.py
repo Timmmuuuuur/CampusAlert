@@ -10,4 +10,4 @@ class FloorLayoutForm(forms.ModelForm):
 class FloorForm(forms.ModelForm):
     class Meta:
         model = Floor
-        fields = ['level', 'begin', 'end', 'layout']
+        fields = ['level', 'layout']
