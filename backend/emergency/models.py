@@ -51,16 +51,31 @@ class FloorLayout(models.Model):
 
     def __str__(self):
         return self.name  # Display the 'name' field as the representation
-    
+
 
 class Floor(models.Model):
-    level = models.IntegerField(unique=True)
+    # TODO: add building field
+    floor_number = models.IntegerField(unique=True)
+    layout = models.OneToOneField(FloorLayout, on_delete=models.CASCADE, related_name='layout')
 
     # top left
     topleft = models.ForeignKey(Coordinate, on_delete=models.CASCADE, related_name='topleft')
     topright = models.ForeignKey(Coordinate, on_delete=models.CASCADE, related_name='topright')
     bottomleft = models.ForeignKey(Coordinate, on_delete=models.CASCADE, related_name='bottomleft')
-    layout = models.OneToOneField(FloorLayout, on_delete=models.CASCADE, related_name='layout')
 
     class Meta:
         app_label = 'emergency'
+        # TODO: uncomment this once building field is created
+        # unique_together = ('building', 'floor_number')
+
+
+class RoomNode(models.Model):
+    floor = models.ForeignKey(Floor, on_delete=models.CASCADE, related_name='floor')
+    name = models.CharField(max_length=255)
+
+    x = models.FloatField()
+    y = models.FloatField()
+
+
+class RoomEdge(models.Model):
+    nodes = models.ManyToManyField(RoomNode, related_name='edges')
