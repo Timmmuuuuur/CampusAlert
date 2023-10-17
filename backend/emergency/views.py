@@ -79,6 +79,19 @@ def create_floorlayout(request):
 
     return render(request, 'create_floorlayout.html', {'form': form})
 
+def create_rooms(request):
+    if request.method == 'POST':
+        form = FloorLayoutForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            # Add a success message to the context
+            context = {'form': form, 'success_message': 'Successfully added!'}
+            return render(request, 'create_floorlayout.html', context)
+    else:
+        form = FloorLayoutForm()
+
+    return render(request, 'create_rooms.html', {'form': form})
+
 
 def get_floorlayout_image_url(request):
     name = request.GET.get('name', '')
@@ -93,3 +106,6 @@ def get_floorlayout_image_url(request):
     else:
         # Handle cases where layout_image is empty
         return JsonResponse({'error': 'Image not found for this name.'})
+    
+def godot_game(request):
+    return render(request, 'godot_game.html')

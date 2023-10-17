@@ -30,6 +30,7 @@ ALLOWED_HOSTS = [
     '10.0.2.2', # Android localhost
     'localhost',
     '127.0.0.1',
+    '*'
 ]
 
 
@@ -72,6 +73,7 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'emergency.middleware.CrossOriginIsolationMiddleware',
 ]
 
 INTERNAL_IPS = [
@@ -139,6 +141,15 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+# Add the directory where your Godot game files are located
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static_staging'),
+]
 
 STATIC_URL = "static/"
 
