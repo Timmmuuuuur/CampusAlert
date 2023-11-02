@@ -1,12 +1,14 @@
-from django.shortcuts import render, redirect, get_object_or_404
+import pandas as pd
+from django.db.models import Q
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from fcm_django.models import FCMDevice
 from firebase_admin.messaging import Message, Notification
-from .forms import FloorForm, FloorLayoutForm
-from django.urls import reverse
 
-from django.http import JsonResponse
+from .forms import BuildingForm, FloorForm, FloorLayoutForm, UploadRoomCSVForm
+from .models import Coordinate, Floor, FloorLayout, RoomEdge, RoomNode
 
-from .models import Floor, FloorLayout, Coordinate
 
 def call_notification(title, body):
     print('Button pressed! Python function called.')
@@ -47,11 +49,15 @@ def create_floor(request):
                 latitude=request.POST.get('latitude3')
             )
 
-            level = form.cleaned_data['level']
+            building = form.cleaned_data['building']
+            floor_number = form.cleaned_data['floor_number']
             layout = form.cleaned_data['layout']
+            name = form.cleaned_data['name']
 
             Floor.objects.create(
-                level = level,
+                building = building,
+                floor_number = floor_number,
+                name = name,
                 layout = layout,
                 topleft = topleft,
                 topright = topright,
@@ -66,6 +72,7 @@ def create_floor(request):
 
     return render(request, 'create_floor.html', {'form': form})
 
+
 def create_floorlayout(request):
     if request.method == 'POST':
         form = FloorLayoutForm(request.POST, request.FILES)
@@ -79,18 +86,34 @@ def create_floorlayout(request):
 
     return render(request, 'create_floorlayout.html', {'form': form})
 
-def create_rooms(request):
+
+def create_building(request):
     if request.method == 'POST':
-        form = FloorLayoutForm(request.POST, request.FILES)
+        form = BuildingForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             # Add a success message to the context
             context = {'form': form, 'success_message': 'Successfully added!'}
-            return render(request, 'create_floorlayout.html', context)
+            return render(request, 'create_building.html', context)
     else:
-        form = FloorLayoutForm()
+        form = BuildingForm()
 
-    return render(request, 'create_rooms.html', {'form': form})
+    return render(request, 'create_building.html', {'form': form})
+
+
+# TODO: outdated, possibly delete
+# def create_rooms(request):
+#     if request.method == 'POST':
+#         form = FloorLayoutForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             form.save()
+#             # Add a success message to the context
+#             context = {'form': form, 'success_message': 'Successfully added!'}
+#             return render(request, 'create_floorlayout.html', context)
+#     else:
+#         form = FloorLayoutForm()
+
+#     return render(request, 'create_rooms.html', {'form': form})
 
 
 def get_floorlayout_image_url(request):
@@ -107,5 +130,118 @@ def get_floorlayout_image_url(request):
         # Handle cases where layout_image is empty
         return JsonResponse({'error': 'Image not found for this name.'})
     
-def godot_game(request):
-    return render(request, 'godot_game.html')
+
+def parse_csv(form, name):
+    try:
+        # Attempt to read and parse CSV files
+        return pd.read_csv(form.cleaned_data[name])
+    except Exception as e:
+        form.add_error(name, f'This is not a valid .csv')
+        raise Exception("An error has occured.")
+
+
+NODES_COLUMNS = ['name', 'x', 'y', 'is_exit']
+EDGES_COLUMNS = ['start_floor', 'start_room_name', 'end_floor', 'end_room_name']
+
+def check_columns(form, df, columns, name):
+    if all(col in df.columns for col in columns):
+        return
+    else:
+        missing_columns = [col for col in columns if col not in df.columns]
+        form.add_error(name, f'Desired columns {missing_columns} are missing from the .csv.')
+        raise Exception(f"Desired columns {missing_columns} are missing from the .csv.")
+
+
+def create_rooms(request):
+    
+    if request.method == 'POST':
+        form = UploadRoomCSVForm(request.POST, request.FILES)
+        if form.is_valid():
+            try:
+                floor = form.cleaned_data['floor']
+                # Attempt to read and parse CSV files
+                nodes_csv = parse_csv(form, 'nodes_csv')
+                edges_csv = parse_csv(form, 'edges_csv')
+
+                # Check to make sure that all the columns are correct
+                check_columns(form, nodes_csv, NODES_COLUMNS, 'nodes_csv')
+                check_columns(form, edges_csv, EDGES_COLUMNS, 'edges_csv')
+
+                # print(nodes_csv)
+                # print(edges_csv)
+
+                ignored_rooms = set()
+                
+                for _, row in nodes_csv.iterrows():
+                    rd = row.to_dict()
+                    
+                    # print(rd, form.cleaned_data['floor'])
+
+                    if RoomNode.objects.filter(floor=floor, name=rd['name']).first() is None:
+                        RoomNode.objects.create(
+                            floor = floor,
+                            name = rd['name'],
+                            x = rd['x'],
+                            y = rd['y'],
+                            is_exit = rd['is_exit']
+                        )
+                    else:
+                        ignored_rooms.add(rd['name'])
+                    
+                if len(ignored_rooms) != 0:
+                    form.add_error(None, f"The following room entries are skipped because they already exist in the database: {[s for s in ignored_rooms]}")
+
+
+                ignored_edges = set()
+
+                for _, row in edges_csv.iterrows():
+                    rd = row.to_dict()
+
+                    if Floor.objects.filter(name=rd['start_floor']).first() is None:
+                        form.add_error('edges_csv', f"{rd['start_floor']} doesn't exist as a floor")
+                        raise Exception()
+                    
+                    if Floor.objects.filter(name=rd['end_floor']).first() is None:
+                        form.add_error('edges_csv', f"{rd['end_floor']} doesn't exist as a floor")
+                        raise Exception()
+                    
+                    start_floor = Floor.objects.filter(name=rd['start_floor']).first()
+                    end_floor = Floor.objects.filter(name=rd['end_floor']).first()
+
+                    if RoomNode.objects.filter(floor=start_floor, name=rd['start_room_name']).first() is None:
+                        form.add_error('edges_csv', f"There is no room on {rd['start_floor']} that is called {rd['start_room_name']}")
+                        raise Exception()
+
+                    if RoomNode.objects.filter(floor=end_floor, name=rd['end_room_name']).first() is None:
+                        form.add_error('edges_csv', f"There is no room on {rd['end_floor']} that is called {rd['end_room_name']}")
+                        raise Exception()
+
+                    start_room = RoomNode.objects.filter(floor=start_floor, name=rd['start_room_name']).first()
+                    end_room = RoomNode.objects.filter(floor=end_floor, name=rd['end_room_name']).first()
+
+                    room_edges = RoomEdge.objects.filter(nodes=start_room).filter(nodes=end_room)
+
+                    if not room_edges.exists():
+                        room_edge = RoomEdge.objects.create()
+                        room_edge.nodes.add(start_room, end_room)
+                    else:
+                        ignored_edges.add(f"{rd['start_floor']} {rd['start_room_name']} → {rd['end_floor']} {rd['end_room_name']}")
+
+                if len(ignored_rooms) != 0:
+                    form.add_error(None, f"The following edge entries are skipped because they already exist in the database: {[s for s in ignored_edges]}")
+
+                # Otherwise a success!
+                context = {'form': form, 'success_message': 'Successfully added!'}
+                return render(request, 'create_floorlayout.html', context)
+
+            except Exception as e:
+                # Handle other exceptions
+                print(e)
+                form.add_error(None, "An error has occurred. Please check your files over.")
+        else:
+            # Form validation errors
+            pass
+    else:
+        form = UploadRoomCSVForm()
+
+    return render(request, 'create_rooms.html', {'form': form})

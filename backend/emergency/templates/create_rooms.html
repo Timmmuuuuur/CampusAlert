@@ -1,233 +1,45 @@
+<!-- upload_floor_plan.html -->
+
 <!DOCTYPE html>
 <html>
 <head>
-    <!-- Include any necessary CSS and JavaScript libraries -->
+    <title>Upload Rooms via .csv</title>
+
 </head>
 <body>
-    <!-- Your room layout image -->
+    <h1>Upload Rooms via .csv files</h1>
 
-    <!-- Toolbar for mode selection -->
+    <p>To create the .csv files, use the CampusAlert Graphmaker application for desktop platforms. Follow the following steps:</p>
 
-    <div id="rete"></div>
+    <ol>
+        <li>Create a new project by creating a folder with the same name as the floor whose room layout you are trying to create</li>
+        <li>Insert the layout of the floor as <code>layout.png</code> within the floor folder</li>
+        <li>Open the CampusAlert Graphmaker application, click Load, and choose the aforementioned folder</li>
+        <li>Use shift-left click to create a new room node. Use right click to connect two nodes</li>
+        <li>Press save when completed</li>
+        <li>Go into the project folder. You should see <code>edges.csv</code> and <code>nodes.csv</code>. Upload them to this form</li>
+    </ol>
 
-<a class="github-fork-ribbon" href="https://github.com/retejs/rete/tree/next" target="_blank" data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a>
+    <p>Your file may take a while to upload.</p>
 
-    <script src="https://cdn.jsdelivr.net/npm/rete@2.0.0-beta.6/rete.min.js"></script>
-    <script src="https://unpkg.com/react-is@17.0.2/umd/react-is.production.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/styled-components@5.2.3/dist/styled-components.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/rete-area-plugin@2.0.0-beta.8/rete-area-plugin.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/rete-render-utils@2.0.0-beta.8/rete-render-utils.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/rete-react-render-plugin@2.0.0-beta.9/rete-react-render-plugin.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/rete-connection-plugin@2.0.0-beta.7/rete-connection-plugin.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/rete-context-menu-plugin@2.0.0-beta.6/rete-context-menu-plugin.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/rete-engine@2.0.0-beta.7/rete-engine.min.js"></script>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Upload">
+    </form>
     
+    <div id="success-message" style="display: none;"></div>
+
     
-    <script id="rendered-js">
-
-const { ClassicPreset: Classic, NodeEditor } = window.Rete
-const { createRoot } = window.ReactDOM
-const { AreaExtensions, AreaPlugin } = window.ReteAreaPlugin
-const { ConnectionPlugin, Presets: ConnectionPresets } = window.ReteConnectionPlugin
-const { ReactRenderPlugin, Presets: ReactPresets } = window.ReteReactRenderPlugin
-const { DataflowEngine } = window.ReteEngine
-const { ContextMenuPlugin, Presets: ContextMenuPresets } = window.ReteContextMenuPlugin
-
-class Connection extends Classic.Connection {}
-
-class NumberNode extends Classic.Node {
-  constructor(initial, change) {
-    super('Number');
-
-    this.addOutput('value', new Classic.Output(socket, 'Number'));
-    this.addControl(
-      'value',
-      new Classic.InputControl('number', { initial, change })
-    );
-  }
-  data() {
-    const value = this.controls['value'].value;
-
-    return {
-      value,
-    };
-  }
-  clone = () => {
-    return new NumberNode(this.controls['value'].value, this.change)
-  }
-}
-
-class RoomNode extends Classic.Node {
-  constructor(name, change) {
-    super('');
-
-    const socket = new Classic.Socket("socket");
-
-    this.addControl("Name", new Classic.InputControl("text", { initial: name, change }));
-    this.addInput("a", new Classic.Input(socket));
-    this.addOutput("a", new Classic.Output(socket));
-  }
-  data(inputs) {
-    // const { left = [], right = [] } = inputs;
-    // const leftControl = this.inputs['left'].control
-    // const rightControl = this.inputs['right'].control
-    // const sum = (left[0] || leftControl.value) + (right[0] || rightControl.value);
-
-    // this.controls['result'].setValue(sum);
-
-    return {};
-  }
-  clone = () => {
-    return new RoomNode(this.change)
-  }
-}
-
-class AddNode extends Classic.Node {
-  constructor(change) {
-    super('Add');
-    const left = new Classic.Input(socket, 'Left')
-    const right = new Classic.Input(socket, 'Right')
-    
-    left.addControl(new Classic.InputControl('number', { initial: 0, change }))
-    right.addControl(new Classic.InputControl('number', { initial: 0, change }))
-
-    this.addInput('left', left);
-    this.addInput('right', right);
-    this.addOutput('value', new Classic.Output(socket, 'Number'));
-    this.addControl('result', new Classic.InputControl('number', { initial: 0, readonly: true }));
-  }
-  data(inputs) {
-    const { left = [], right = [] } = inputs;
-    const leftControl = this.inputs['left'].control
-    const rightControl = this.inputs['right'].control
-    const sum = (left[0] || leftControl.value) + (right[0] || rightControl.value);
-
-    this.controls['result'].setValue(sum);
-
-    return {
-      value: sum,
-    };
-  }
-  clone = () => {
-    return new AddNode(this.change)
-  }
-}
-
-const socket = new Classic.Socket('socket');
-console.log('document', document)
-const editor = new NodeEditor();
-const area = new AreaPlugin(document.querySelector('#rete'));
-const connection = new ConnectionPlugin();
-const reactRender = new ReactRenderPlugin({ createRoot });
-// const contextMenu = new ContextMenuPlugin({
-//   items: ContextMenuPresets.classic.setup([
-//     ['Add room', () => new NumberNode(1, process)]
-//   ])
-// })
-
-connection.addPreset(ConnectionPresets.classic.setup())
-
-editor.use(area);
-
-area.use(reactRender);
-area.use(connection);
-
-reactRender.addPreset(ReactPresets.classic.setup({ area }));
-reactRender.addPreset(ReactPresets.contextMenu.setup());
-
-
-AreaExtensions.simpleNodesOrder(area);
-AreaExtensions.showInputControl(area);
-
-AreaExtensions.selectableNodes(area, AreaExtensions.selector(), {
-  accumulating: AreaExtensions.accumulateOnCtrl(),
-});
-
-const dataflow = new DataflowEngine();
-
-editor.use(dataflow);
-
-void async function () {
-
-    const contextMenu = new ContextMenuPlugin({
-        items: ContextMenuPresets.classic.setup([
-            ['Add room', () => new RoomNode("", process)]
-        ])
-    })
-
-    await area.use(contextMenu);
-
-    const a = new NumberNode(1, process);
-    const b = new NumberNode(1, process);
-    const add = new AddNode(process);
-
-    await editor.addNode(a);
-    await editor.addNode(b);
-    await editor.addNode(add);
-
-    await editor.addConnection(new Connection(a, 'value', add, 'left'));
-    await editor.addConnection(new Connection(b, 'value', add, 'right'));
-
-    await area.translate(a.id, { x: 80, y: 200 });
-    await area.translate(b.id, { x: 80, y: 400 });
-    await area.translate(add.id, { x: 500, y: 240 });
-
-    setTimeout(() => { //wait for nodes to be rendered
-        AreaExtensions.zoomAt(area, editor.getNodes());
-    }, 100)
-
-    async function process() {
-        dataflow.reset();
-        for (const node of editor.getNodes()) {
-        if (node instanceof AddNode) {
-            await dataflow.fetch(node.id);
-
-            area.update('control', node.controls['result'].id);
+    <script>
+        // Check if the success message exists in the context
+        var successMessage = "{{ success_message|default:'' }}";
+        if (successMessage) {
+            // Display the success message
+            document.getElementById('success-message').innerText = successMessage;
+            document.getElementById('success-message').style.display = 'block';
         }
-        }
-    }
-    await process();
-
-    editor.addPipe((context) => {
-        if (
-        context.type === 'connectioncreated' ||
-        context.type === 'connectionremoved'
-        ) {
-        process();
-        }
-        return context;
-    });
-
-}()
-
     </script>
-
-    <style>
-    #rete {
-        width: 100vw;
-        height: 100vh;
-    }
-
-    #rete span.control {
-        font-size: 10pt;
-        width: 100px;
-    }
-
-    #rete .output {
-        width: 0px;
-        height: 0px;
-    }
-
-    #rete .input {
-        width: 0px;
-        height: 0px;
-    }
-
-    #rete .title {
-        padding: 0px;
-    }
-    </style>
+        
 </body>
 </html>
