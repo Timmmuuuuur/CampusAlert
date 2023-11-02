@@ -58,13 +58,15 @@ You might have to do this occassionally when Django is being super stubborn and 
 python manage.py reset_db
 ```
 
-Make sure to delete every Python file in `migrations` as well.
+After that, delete every Python file in `migrations` as well. Then follow the step above to makemigration and migrate.
 
 ### Create an admin account
 
 ```py
 python manage.py createsuperuser
 ```
+
+You can ignore the warning about short password in development environment.
 
 Kevin's admin account:
 - username: thundertonic

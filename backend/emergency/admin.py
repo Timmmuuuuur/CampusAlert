@@ -5,6 +5,8 @@ from .models import Crime
 from .models import Location
 from .models import Floor
 from .models import FloorLayout
+from .models import RoomNode
+from .models import RoomEdge
 
 # Register your models here.
 admin.site.register(Report)
@@ -13,3 +15,5 @@ admin.site.register(Coordinate)
 admin.site.register(Location)
 admin.site.register(Floor)
 admin.site.register(FloorLayout)
+admin.site.register(RoomNode)
+admin.site.register(RoomEdge)
