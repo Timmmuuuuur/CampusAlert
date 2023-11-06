@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     "rest_framework",
     "fcm_django",
     "rest_framework_jwt",
-    'django_extensions',
+    "django_extensions",
+    "simple_history",
 ]
 
 REST_FRAMEWORK = {
@@ -58,6 +59,9 @@ REST_FRAMEWORK = {
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
         # Other authentication classes if any
     ],
+    
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 32,
 }
 
 JWT_AUTH = {
@@ -73,7 +77,8 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    'emergency.middleware.CrossOriginIsolationMiddleware',
+    "emergency.middleware.CrossOriginIsolationMiddleware",
+    "simple_history.middleware.HistoryRequestMiddleware",
 ]
 
 INTERNAL_IPS = [
