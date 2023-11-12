@@ -1,3 +1,4 @@
+import 'package:campusalert/building_prompt_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -15,6 +16,17 @@ class EmergencyAlertPage extends StatelessWidget {
 
     return Column(
       children: [
+        // ElevatedButton(
+        //   onPressed: () {
+        //     // Navigate to the SecondPage when the button is pressed
+        //     Navigator.push(
+        //       context,
+        //       MaterialPageRoute(builder: (context) => BuildingPromptPage()),
+        //     );
+        //   },
+        //   child: Text('Go to Second Page'),
+        // ),
+
         Text('EMERGENCY ALERT SWITCH',
             textAlign: TextAlign.center,
             style: TextStyle(
@@ -27,6 +39,10 @@ class EmergencyAlertPage extends StatelessWidget {
         DragActivationComponent(
           onActivate: () {
             print("Swipping done!");
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => BuildingPromptPage()),
+            );
           },
         ),
         Text(
@@ -52,3 +68,31 @@ class TestCountDisplayer extends StatelessWidget {
     return Text(count.toString());
   }
 }
+
+//   void _login(VoidCallback onSuccess, AppState appState) async {
+//     // Implement the login logic here
+//     // You can validate the username and password, make API requests, etc.
+
+//     if (_username == null) {
+//       setState(() {
+//         _errorMessage = 'Please enter the username';
+//       });
+//       return;
+//     }
+
+//     if (_password == null) {
+//       setState(() {
+//         _errorMessage = 'Please enter the password';
+//       });
+//       return;
+//     }
+
+//     if (await appState.login(_username!, _password!)) {
+//       onSuccess();
+//     } else {
+//       setState(() {
+//         _errorMessage = 'Invalid username or password';
+//       });
+//     }
+//   }
+// }

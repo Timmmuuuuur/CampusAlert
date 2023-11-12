@@ -26,7 +26,12 @@ SECRET_KEY = "django-insecure-b415^1au71&_p4(a57i^94f*)6&p7x%7a%wh9myl0q5utr%58d
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '10.0.2.2', # Android localhost
+    'localhost',
+    '127.0.0.1',
+    '*'
+]
 
 
 # Application definition
@@ -39,11 +44,29 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.sessions",
     "playground.apps.PlaygroundConfig",
+    "emergency",
+    "authentication",
     "debug_toolbar",
     "rest_framework",
-    "emergency",
-    "fcm_django"
+    "fcm_django",
+    "rest_framework_jwt",
+    "django_extensions",
+    "simple_history",
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        # Other authentication classes if any
+    ],
+    
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 32,
+}
+
+JWT_AUTH = {
+    'JWT_ALLOW_REFRESH': True,
+}
 
 MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",  # Manages sessions across requests
@@ -54,6 +77,8 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "emergency.middleware.CrossOriginIsolationMiddleware",
+    "simple_history.middleware.HistoryRequestMiddleware",
 ]
 
 INTERNAL_IPS = [
@@ -122,6 +147,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+# Add the directory where your Godot game files are located
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static_staging'),
+]
+
 STATIC_URL = "static/"
 
 # Default primary key field type
@@ -157,3 +191,6 @@ FCM_DJANGO_SETTINGS = {
      # default: False
     "DELETE_INACTIVE_DEVICES": False,
 }
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

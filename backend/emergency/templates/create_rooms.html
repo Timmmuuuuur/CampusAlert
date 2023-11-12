@@ -1,0 +1,45 @@
+<!-- upload_floor_plan.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Rooms via .csv</title>
+
+</head>
+<body>
+    <h1>Upload Rooms via .csv files</h1>
+
+    <p>To create the .csv files, use the CampusAlert Graphmaker application for desktop platforms. Follow the following steps:</p>
+
+    <ol>
+        <li>Create a new project by creating a folder with the same name as the floor whose room layout you are trying to create</li>
+        <li>Insert the layout of the floor as <code>layout.png</code> within the floor folder</li>
+        <li>Open the CampusAlert Graphmaker application, click Load, and choose the aforementioned folder</li>
+        <li>Use shift-left click to create a new room node. Use right click to connect two nodes</li>
+        <li>Press save when completed</li>
+        <li>Go into the project folder. You should see <code>edges.csv</code> and <code>nodes.csv</code>. Upload them to this form</li>
+    </ol>
+
+    <p>Your file may take a while to upload.</p>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Upload">
+    </form>
+    
+    <div id="success-message" style="display: none;"></div>
+
+    
+    <script>
+        // Check if the success message exists in the context
+        var successMessage = "{{ success_message|default:'' }}";
+        if (successMessage) {
+            // Display the success message
+            document.getElementById('success-message').innerText = successMessage;
+            document.getElementById('success-message').style.display = 'block';
+        }
+    </script>
+        
+</body>
+</html>

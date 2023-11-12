@@ -19,11 +19,17 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import RedirectView
 
+from django.conf import settings
+from django.conf.urls.static import static
+
 urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path("admin/", admin.site.urls),
     path('playground/', include('playground.urls')),
     path('emergency/', include('emergency.urls')),
+    path('auth/', include('authentication.urls')),
     path('', RedirectView.as_view(url='playground/')), 
     path("__debug__/", include("debug_toolbar.urls"))
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

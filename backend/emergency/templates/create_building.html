@@ -1,0 +1,40 @@
+<!-- upload_floor_plan.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Building</title>
+
+</head>
+<body>
+    <h1>Upload Building</h1>
+
+    <p>Building consists of a list of floors with unique floor numbers. There is no notion of where the building is located, as all geographic information are stored by individual rooms.</p>
+
+    <ul>
+        <li>The name must be unique and be no longer than 255 characters.</li>
+    </ul>
+
+    <form id="form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <input type="submit" value="Submit">
+    </form>
+    
+    
+    <div id="success-message" style="display: none;"></div>
+
+    
+    <script>
+        // Check if the success message exists in the context
+        var successMessage = "{{ success_message|default:'' }}";
+        if (successMessage) {
+            // Display the success message
+            document.getElementById('success-message').innerText = successMessage;
+            document.getElementById('success-message').style.display = 'block';
+        }
+    </script>
+        
+</body>
+</html>
