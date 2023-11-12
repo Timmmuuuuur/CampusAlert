@@ -1,0 +1,8 @@
+<!-- user will see a page with all user inputs about the photo to be uploaded-->
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}  <!-- auto taken care by Django to identify user-->
+    {{ form.image }}
+    {{ form.description }}
+    {{ form.location }}
+    <input type="submit" value="Upload Photo">
+</form>
