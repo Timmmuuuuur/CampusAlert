@@ -12,6 +12,13 @@ djangorestframework-jwt
 django-extensions
 django-simple-history
 ```
+If your IDE is set with all requirement, do 
+pip freeze > requirements.txt
+to generate dependecy 
+others: 
+pip install -r requirements.txt
+
+
 
 NOTE: there is a risk that installing firebase_admin can cause damage to the OpenSSL package in Python distro. See here on how to fix it: https://stackoverflow.com/questions/73830524/attributeerror-module-lib-has-no-attribute-x509-v-flag-cb-issuer-check
 
