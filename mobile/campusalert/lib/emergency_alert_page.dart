@@ -1,4 +1,5 @@
 import 'package:campusalert/building_prompt_page.dart';
+import 'package:campusalert/schemas/schema.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -13,6 +14,7 @@ class EmergencyAlertPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<AppState>();
+    var schemaFetcher = context.watch<SchemaFetcher>();
 
     return Column(
       children: [
@@ -49,23 +51,20 @@ class EmergencyAlertPage extends StatelessWidget {
             'Swiping the above switch will activate the alarm campus-wide.\nONLY USE THIS IF ANYONE MAY BE IN IMMEDIATE/POTENTIAL DANGER.\nKNOWINGLY ACTIVATING A FALSE ALARM WILL RESULT IN DISCIPLINARY ACTIONS.',
             textAlign: TextAlign.center,
             style: TextStyle(
-                fontSize: 25, color: Colors.red, fontWeight: FontWeight.w900))
+                fontSize: 25, color: Colors.red, fontWeight: FontWeight.w900)),
+        // TODO: fetch text with async
+        Text(schemaFetcher.lastUpdate ?? "No date found"),
+        TextButton(
+          onPressed: () => schemaFetcher.checkForUpdateAndUpdate(),
+          child: Text('Update database'),
+        ),
+        // TODO: remove debug button
+        TextButton(
+          onPressed: () => schemaFetcher.debugDeleteDate(),
+          child: Text('DEBUG: clear date'),
+        ),
       ],
     );
-  }
-}
-
-class TestCountDisplayer extends StatelessWidget {
-  const TestCountDisplayer({
-    super.key,
-    required this.count,
-  });
-
-  final int count;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(count.toString());
   }
 }
 

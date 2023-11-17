@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:campusalert/account_page.dart';
 import 'package:campusalert/api_service.dart';
 import 'package:campusalert/building_prompt_page.dart';
+import 'package:campusalert/schemas/database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -13,8 +15,10 @@ import 'package:rxdart/rxdart.dart';
 
 import 'login_page.dart';
 import 'emergency_alert_page.dart';
-import 'building_prompt_page.dart';
-import 'floor_prompt_page.dart';
+import 'package:campusalert/auth.dart';
+import 'package:campusalert/schemas/schema.dart';
+
+import 'package:drift_db_viewer/drift_db_viewer.dart';
 
 Future<void> main() async {
   // Flutter setup
@@ -51,6 +55,8 @@ Future<void> main() async {
     appContext.messageStreamController.sink.add(message);
   });
 
+  initializeDatabase();
+
   runApp(App(
     appContext: appContext,
   ));
@@ -70,6 +76,17 @@ Future<String?> tokenFromMessaging(FirebaseMessaging messaging) async {
   }
 
   return token;
+}
+
+Future<bool> _autoLogin() async {
+  // Attempt to automatically log in using past stored user session. If the user is logged out, nothing happens and false is returned
+  // This is called when the app first land on the login screen
+  try {
+    (await Credential.getLastCredential()).login();
+    return true;
+  } on LastCredentialMissingException {
+    return false;
+  }
 }
 
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -110,20 +127,44 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => AppState(appContext: appContext),
-      child: MaterialApp(
-        title: 'CampusAlert',
-        initialRoute: '/',
-        routes: {
-          '/': (context) => LoginPage(),
-          '/main_app': (context) => NavigationRoot(),
-        },
-        theme: ThemeData(
-            useMaterial3: true,
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
-            fontFamily: 'Overpass'),
-      ),
+    return FutureBuilder<bool>(
+      future: _autoLogin(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          // While the future is still running, return a loading indicator
+          return CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          // Handle errors here, e.g., display an error message
+          return Text('Error: ${snapshot.error}');
+        } else {
+          // Data has been successfully fetched, display it
+          bool autoLoginSuccess = snapshot.data!;
+
+          return MultiProvider(
+            providers: [
+              ChangeNotifierProvider<AppState>(
+                create: (_) => AppState(appContext: appContext),
+              ),
+              ChangeNotifierProvider<SchemaFetcher>(
+                create: (_) => SchemaFetcher(appContext: appContext),
+              )
+            ],
+            child: MaterialApp(
+              title: 'CampusAlert',
+              initialRoute: autoLoginSuccess ? '/main_app' : '/',
+              routes: {
+                '/': (context) => LoginPage(),
+                '/main_app': (context) => NavigationRoot(),
+              },
+              theme: ThemeData(
+                  useMaterial3: true,
+                  colorScheme:
+                      ColorScheme.fromSeed(seedColor: Colors.deepOrange),
+                  fontFamily: 'Overpass'),
+            ),
+          );
+        }
+      },
     );
   }
 }
@@ -139,7 +180,6 @@ class AppState extends ChangeNotifier {
   var count = 1;
   var selectedPageIndex = 0;
 
-  APIService? apiService;
   String lastMessage = "";
 
   void increment() {
@@ -150,18 +190,6 @@ class AppState extends ChangeNotifier {
   void selectPage(int index) {
     selectedPageIndex = index;
     notifyListeners();
-  }
-
-  Future<bool> login(String username, String password) async {
-    apiService = APIService(username);
-
-    try {
-      await apiService!.login(password);
-    } on HttpException {
-      return false;
-    }
-
-    return true;
   }
 
   void onNewMessage(message) {
@@ -178,18 +206,14 @@ class AppState extends ChangeNotifier {
 }
 
 class NavigationRoot extends StatelessWidget {
-  static const List<Widget> _pages = <Widget>[
+  static List<Widget> _pages = <Widget>[
     EmergencyAlertPage(),
-    // BuildingPromptPage(),
-    // FloorPromptPage(),
-    Icon(
-      Icons.camera,
-      size: 150,
-    ),
+    DriftDbViewer(localDatabase!),
     Icon(
       Icons.chat,
       size: 150,
     ),
+    AccountPage(),
   ];
 
   @override
@@ -206,6 +230,10 @@ class NavigationRoot extends StatelessWidget {
           BottomNavigationBarItem(
             icon: Icon(Icons.sos_outlined),
             label: 'EMERGENCY ALERT',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.business),
+            label: 'BUILDINGS',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.notification_important),

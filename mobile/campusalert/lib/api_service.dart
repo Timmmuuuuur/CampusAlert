@@ -4,39 +4,29 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:jwt_decoder/jwt_decoder.dart';
 
-class User {
-  final String username;
-  String? email;
-
-  User({
-    required this.username,
-    this.email,
-  });
-}
+import 'package:campusalert/auth.dart';
+import 'package:campusalert/local_store.dart';
 
 class APIService {
   // TODO: Development URL. Change this to production later.
-  final String baseURL = "10.0.2.2:8080";
-  final String username;
-  User? user;
+  static final String baseURL = "10.0.2.2:8080";
 
-  APIService(this.username)
-      : user = User(
-          username: username,
-        );
-
-  Future<http.Response> post(
+  static Future<http.Response> post(
       String path, Map<String, String> headers, String body) {
     var url = Uri.http(baseURL, path);
     return http.post(url, headers: headers, body: body);
   }
 
-  Future<http.Response> get(String path, Map<String, String> headers) {
+  static Future<http.Response> get(String path, Map<String, String> headers) {
     var url = Uri.http(baseURL, path);
     return http.get(url, headers: headers);
   }
 
-  Future<Map<String, dynamic>> postLogin(
+  static Future<http.Response> getByUri(Uri uri, Map<String, String> headers) {
+    return http.get(uri, headers: headers);
+  }
+
+  static Future<Map<String, dynamic>> postLogin(
       String path, Map<String, dynamic> body) async {
     return json.decode((await post(
             path,
@@ -48,18 +38,46 @@ class APIService {
   }
 
   // post and get format in JSON and with authentication token
-  Future<Map<String, dynamic>> postCommon(
+  static Future<Map<String, dynamic>> postCommon(
       String path, Map<String, dynamic> body) async {
     return json.decode(
         (await post(path, await getCommonHeaders(), jsonEncode(body))).body);
   }
 
   // get format in JSON and with authentication token
-  Future<Map<String, dynamic>> getCommon(String path) async {
+  static Future<Map<String, dynamic>> getCommon(String path) async {
     return json.decode((await get(path, await getCommonHeaders())).body);
   }
 
-  Future<Map<String, String>> getCommonHeaders() async {
+    static Future<Map<String, dynamic>> getCommonWithUri(Uri uri) async {
+    return json.decode((await getByUri(uri, await getCommonHeaders())).body);
+  }
+
+  // like getCommon, but automatically collapses pagination with the following format:
+  /* {
+    "count": <how many items there are>,
+    "next": <URL to the next page>,
+    "previous": <URL to the previous page>,
+    "results": [ <list of data on this page> ]
+  } */
+  static Future<List<dynamic>> getCommonWithPagination(String path) async {
+    Uri next = Uri.http(baseURL, path);
+    List<dynamic> collapsed = <dynamic>[];
+
+    while (true) {
+      Map<String, dynamic> page = await getCommonWithUri(next);
+      collapsed.addAll(page["results"]);
+      var nextAsString = page["next"];
+      if (nextAsString == null) {
+        break;
+      }
+      next = Uri.parse(nextAsString);
+    }
+
+    return collapsed;
+  }
+
+  static Future<Map<String, String>> getCommonHeaders() async {
     final accessToken = await getAccessTokenSafe();
     return {
       'Authorization': 'JWT $accessToken',
@@ -67,31 +85,13 @@ class APIService {
     };
   }
 
-  Future<String> login(String password) async {
-    Map<String, dynamic> response =
-        await postLogin("auth/login/", <String, String>{
-      "username": username,
-      "password": password,
-    });
-
-    String? token = response["token"];
-
-    if (token == null) {
-      throw HttpException("Login failed");
-    } else {
-      storePassword(password);
-      storeAccessToken(token);
-    }
-
-    return token;
-  }
-
   // not enabled server-side for now
   /* Future<String?> refreshToken(String refreshToken) async {
     // Implement the token refresh API request here
   } */
 
-  Future<User> whoami() async {
+  static Future<User> whoami() async {
+    // check what the server thinks we are
     Map<String, dynamic> response = await getCommon("auth/whoami/");
     return User(
       username: response["username"],
@@ -99,44 +99,32 @@ class APIService {
     );
   }
 
-  Future<void> storeAccessToken(String token) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('access_token', token);
-  }
-
-  Future<String?> getAccessTokenRaw() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('access_token');
-  }
+  static final SPStringPair accessTokenStore = SPStringPair('access_token');
 
   // acquire the access token, and update it if it's missing or expired
-  Future<String> getAccessTokenSafe() async {
-    String? nullableToken = await getAccessTokenRaw();
+  // Throws LastCredentialMissingException if the user is not logged in
+  // TODO: this still does not deal with the situation where the user's credential changed as the user is using the app
+  static Future<String> getAccessTokenSafe() async {
+    String? nullableToken = await accessTokenStore.get();
     String token;
 
     // if the token is missing
     if (nullableToken == null) {
-      token = await login((await getPassword())!);
+      print('Token is missing. Fetching a new one...');
+      // TODO: try is needed here
+      token = await ((await Credential.getLastCredential()).login());
     } else {
       token = nullableToken;
     }
 
     // if the token is expired
-    if (JwtDecoder.isExpired(JwtDecoder.decode(token)['exp'])) {
-      token = await login((await getPassword())!);
+    if (JwtDecoder.isExpired(token)) {
+      print('Token is expired. Fetching a new one...');
+      // TODO: try is needed here
+      token = await ((await Credential.getLastCredential()).login());
     }
 
     return token;
-  }
-
-  Future<void> storePassword(String password) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('password', password);
-  }
-
-  Future<String?> getPassword() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('password');
   }
 
   /* Future<void> storeRefreshToken(String token) async {
