@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 Future<List<dynamic>> fetchPhotos(String latitude, String longitude, String buildingId, String floorId) async {
   // Construct the URL with query parameters
   //*     ##########   replace field below   ########         *//
-  final Uri uri = Uri.parse('https://your-django-backend.com/get_all_photos') //replace with the actual URL of your Django backend endpoint for get_all_photos
+  final Uri uri = Uri.parse('http://127.0.0.1:8000/get_all_photos') //replace with the actual URL of your Django backend endpoint for get_all_photos
       .replace(queryParameters: {
     'latitude': latitude,
     'longitude': longitude,
