@@ -52,7 +52,7 @@ class RoomNodeSerializer(serializers.ModelSerializer):
     latlong = serializers.SerializerMethodField('get_latlong')
 
     def get_latlong(self, obj: RoomNode):
-        return list(obj.get_latlong())
+        return obj.get_latlong()
 
 
     class Meta:
