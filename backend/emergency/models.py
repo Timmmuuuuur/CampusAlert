@@ -33,9 +33,16 @@ class Coordinate(models.Model):
 
     def __str__(self):
         return f"Lat: {self.latitude}, Lon: {self.longitude}"
+    
+    def as_dict(self):
+        return {
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+        }
 
     class Meta:
         app_label = 'emergency'
+        ordering = ['longitude', 'latitude']
 
 
 class Location(models.Model):
@@ -49,6 +56,7 @@ class Location(models.Model):
 
     class Meta:
         app_label = 'emergency'
+        ordering = ['building', 'floor', 'room']
 
 
 class FloorLayout(models.Model):
@@ -59,6 +67,7 @@ class FloorLayout(models.Model):
 
     class Meta:
         app_label = 'emergency'
+        ordering = ['name']
 
     def __str__(self):
         return self.name  # Display the 'name' field as the representation
@@ -68,6 +77,9 @@ class Building(models.Model):
     name = models.CharField(max_length=255, unique=True)
 
     history = HistoricalRecords()
+
+    class Meta:
+        ordering = ['name']
 
     def __str__(self):
         return str.capitalize(self.name)
@@ -89,6 +101,7 @@ class Floor(models.Model):
     class Meta:
         app_label = 'emergency'
         unique_together = ('building', 'floor_number')
+        ordering = ['building', 'floor_number']
 
     def __str__(self):
         return f"{self.name} i.e. {str(self.building)} Floor {self.floor_number}"
@@ -158,6 +171,7 @@ class RoomNode(models.Model):
     class Meta:
         app_label = 'emergency'
         unique_together = ('floor', 'name')
+        ordering = ['floor', 'name']
 
     def __str__(self):
         return f"{str(self.floor.building)} {self.name}"
@@ -167,13 +181,18 @@ class RoomNode(models.Model):
         original_point = np.array([self.x, self.y, 1])
 
         # Use matrix-vector multiplication to transform the point, then throw away the extra dimension necessary for affine transform
-        return np.dot(self.floor.get_transform(), original_point)[:2][::-1]
+        
+        l = np.dot(self.floor.get_transform(), original_point)[:2][::-1]
+        return Coordinate(latitude=l[0], longitude=l[1]).as_dict()
 
 
 class RoomEdge(models.Model):
     nodes = models.ManyToManyField(RoomNode, related_name='nodes')
 
     history = HistoricalRecords()
+
+    class Meta:
+        ordering = ['id']
 
     def __str__(self):
         return '→'.join([str(n) for n in self.nodes.all()])
