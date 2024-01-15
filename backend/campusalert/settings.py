@@ -49,14 +49,20 @@ INSTALLED_APPS = [
     "debug_toolbar",
     "rest_framework",
     "fcm_django",
-    "rest_framework_jwt",
+    "rest_framework_jwt",#
     "django_extensions",
     "simple_history",
+    "adminPost", # admin broadcast poster/text/image and etc media to users
 ]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        #'rest_framework.authentication.BasicAuthentication',
+        #'rest_framework.authentication.SessionAuthentication',
+        #'rest_framework_simplejwt.authentication.JWTTokenUserAuthentication',  # Use the correct class
+        #
+        #rest_framework_jwt originally 
         # Other authentication classes if any
     ],
     

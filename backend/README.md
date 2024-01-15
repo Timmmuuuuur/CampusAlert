@@ -1,7 +1,13 @@
-# CampusAlert backend
+### CampusAlert backend
+
+##Django kick start- file structions
+forms check for user input, urls routes the user input (i.e. request) and send it to the right destination (i.e. url destination), views defines the http interaction between user
 
 ## Set up
+
 Pip requirement packages:
+
+
 ```
 Django
 django-debug-toolbar
@@ -12,6 +18,36 @@ djangorestframework-jwt
 django-extensions
 django-simple-history
 ```
+# side note: virtual environment and python notebook and other IDEs may be remove, see
+eva's requiremnt.txt
+pip install --no-deps -r requirements.txt 
+
+
+
+
+## Virtual env (maintain the same terminal, Mac)
+
+mkdir env
+mkdir env/bin 
+
+source env/bin/activate # start virtual space
+deactivate # turn off
+
+# side note: dependency varies on hardware etc, but gerneral tips are, (most important first)
+# 0. use virtual environment 
+# 1. stay at python => 3.7
+# 2. truncate exsiting requirement into smaller pieces to install 
+# 3. to avoid python selecting higher but not eligible versions for build that lead to build fail, try starting with an empty virtual environment
+# 4. when installing requirement stocks, try install indepedntly and use command 
+# pip cache purge 
+# (clean up cache)
+# pip install --no-deps -r requirements.txt
+# (avoid re-installing/ caching exisitng libs found in env)
+
+
+### Running Django once resolved dependecy 
+DJANGO_SETTINGS_MODULE=campusalert.settings python manage.py runserver
+
 
 NOTE: there is a risk that installing firebase_admin can cause damage to the OpenSSL package in Python distro. See here on how to fix it: https://stackoverflow.com/questions/73830524/attributeerror-module-lib-has-no-attribute-x509-v-flag-cb-issuer-check
 
