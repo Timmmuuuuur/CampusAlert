@@ -4,12 +4,17 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class ImageWithOverlay extends StatefulWidget {
+  final void Function(Offset)? onTapCallback;
+
   final String imageUrl;
   final List<Point> points;
   final List<Line> lines;
 
   ImageWithOverlay(
-      {required this.imageUrl, required this.points, required this.lines});
+      {required this.imageUrl,
+      required this.points,
+      required this.lines,
+      this.onTapCallback});
 
   @override
   ImageWithOverlayState createState() => ImageWithOverlayState();
@@ -28,19 +33,24 @@ class ImageWithOverlayState extends State<ImageWithOverlay> {
           onTapUp: (TapUpDetails details) {
             // Calculate the tapped position in terms of widget coordinates
             final RenderBox renderBox = context.findRenderObject() as RenderBox;
-            final globalPosition = renderBox.globalToLocal(details.globalPosition);
+            final globalPosition =
+                renderBox.globalToLocal(details.globalPosition);
 
             // Determine the size of the image
             final imageSize = renderBox.size;
 
             // Calculate the tapped position in terms of image coordinates
             final tappedPosition = Offset(
-              (globalPosition.dx / imageSize.width) * 100, // Example: Convert to percentage of width
-              (globalPosition.dy / imageSize.height) * 100, // Example: Convert to percentage of height
+              (globalPosition.dx / imageSize.width) *
+                  _imageWidth, // Example: Convert to percentage of width
+              (globalPosition.dy / imageSize.height) *
+                  _imageHeight, // Example: Convert to percentage of height
             );
 
-            // Emit your event or handle the tapped position as needed
             print("Tapped at: $tappedPosition");
+            if (widget.onTapCallback != null) {
+              widget.onTapCallback!(tappedPosition);
+            }
           },
           child: FutureBuilder(
             future: _getImageDimensions(),
@@ -111,8 +121,8 @@ class ImageOverlayPainter extends CustomPainter {
   final double imageHeight;
 
   // Constructor
-  ImageOverlayPainter(this.points, this.lines, this.imageWidth,
-      this.imageHeight);
+  ImageOverlayPainter(
+      this.points, this.lines, this.imageWidth, this.imageHeight);
 
   @override
   void paint(Canvas canvas, Size size) {
