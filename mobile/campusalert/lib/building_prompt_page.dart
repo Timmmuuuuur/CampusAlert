@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'main.dart';
-import 'drag_activation.dart';
+import 'components/drag_activation.dart';
 import 'api_service.dart';
 import 'package:http/http.dart' as http;
 

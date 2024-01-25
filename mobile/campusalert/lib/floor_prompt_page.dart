@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:campusalert/emergency_alert_page.dart';
 
 import 'main.dart';
-import 'drag_activation.dart';
+import 'components/drag_activation.dart';
 
 class FloorPromptPage extends StatefulWidget {
   @override

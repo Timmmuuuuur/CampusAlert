@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'main.dart';
-import 'drag_activation.dart';
+import 'components/drag_activation.dart';
 
 class AccountPage extends StatelessWidget {
   const AccountPage({
@@ -14,9 +14,14 @@ class AccountPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<AppState>();
+    var fcmTokenString = appState.appContext.fcmToken ?? "[No token]";
 
     return Column(
-      children: [SizedBox(height: 30.0), LogoutButton()],
+      children: [
+        SizedBox(height: 30.0),
+        LogoutButton(),
+        Text("FCM Token: $fcmTokenString"),
+      ],
     );
   }
 }

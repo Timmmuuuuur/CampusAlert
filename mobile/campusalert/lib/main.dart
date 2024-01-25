@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:campusalert/account_page.dart';
 import 'package:campusalert/api_service.dart';
 import 'package:campusalert/building_prompt_page.dart';
+import 'package:campusalert/components/image_overlay.dart';
 import 'package:campusalert/schemas/database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -19,6 +20,7 @@ import 'package:campusalert/auth.dart';
 import 'package:campusalert/schemas/schema.dart';
 
 import 'package:drift_db_viewer/drift_db_viewer.dart';
+
 
 Future<void> main() async {
   // Flutter setup
@@ -157,10 +159,13 @@ class App extends StatelessWidget {
                 '/main_app': (context) => NavigationRoot(),
               },
               theme: ThemeData(
-                  useMaterial3: true,
-                  colorScheme:
-                      ColorScheme.fromSeed(seedColor: Colors.deepOrange),
-                  fontFamily: 'Overpass'),
+                useMaterial3: true,
+                colorScheme:
+                  ColorScheme.fromSeed(seedColor: Colors.deepOrange),
+                iconTheme: IconThemeData(
+                  color: Colors.black, // or any color that contrasts with your background
+                ),
+                fontFamily: 'Overpass'),
             ),
           );
         }
@@ -209,10 +214,11 @@ class NavigationRoot extends StatelessWidget {
   static List<Widget> _pages = <Widget>[
     EmergencyAlertPage(),
     DriftDbViewer(localDatabase!),
-    Icon(
-      Icons.chat,
-      size: 150,
-    ),
+    Column(children: [
+      Text("Follow the red line to get to the exit. Press Next when you get to the end of the line.", style: TextStyle(
+                fontSize: 27, color: Colors.red, fontWeight: FontWeight.w900)),
+      ImageWithOverlay(imageUrl: "http://10.0.2.2:8080/media/layout_images/layout_hAL2RG8.png", points: [Point(20, 20)], lines: [Line(Point(0, 0), Point(685, 323))])
+    ]),
     AccountPage(),
   ];
 
@@ -222,14 +228,15 @@ class NavigationRoot extends StatelessWidget {
     var count = appState.count;
 
     return Scaffold(
-      body: _pages[appState.selectedPageIndex],
+      body: SafeArea(child: _pages[appState.selectedPageIndex]),
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         currentIndex: appState.selectedPageIndex,
         onTap: (int index) => appState.selectPage(index),
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.sos_outlined),
-            label: 'EMERGENCY ALERT',
+            label: 'EMERGENCY',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.business),

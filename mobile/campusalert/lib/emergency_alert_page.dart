@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'main.dart';
-import 'drag_activation.dart';
+import 'components/drag_activation.dart';
+
+import 'package:campusalert/components/title.dart' as title;
 
 class EmergencyAlertPage extends StatelessWidget {
   const EmergencyAlertPage({
@@ -29,13 +31,7 @@ class EmergencyAlertPage extends StatelessWidget {
         //   child: Text('Go to Second Page'),
         // ),
 
-        Text('EMERGENCY ALERT SWITCH',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 50,
-              color: Colors.red,
-              fontWeight: FontWeight.w900,
-            )),
+        title.Title(text: 'EMERGENCY ALERT SWITCH'),
         Text(appState.appContext.fcmToken ?? "[No token]"),
         Text(appState.lastMessage),
         DragActivationComponent(
