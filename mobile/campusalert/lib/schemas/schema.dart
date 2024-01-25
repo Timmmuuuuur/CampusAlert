@@ -1,11 +1,19 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:campusalert/api_service.dart';
 import 'package:campusalert/local_store.dart';
 import 'package:campusalert/main.dart';
 import 'package:campusalert/schemas/database.dart';
+import 'package:campusalert/services/room_graph.dart';
+import 'package:campusalert/services/image_cache.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
 
-abstract class Schema {}
+Future<void> preCacheFloorLayouts() async {
+  var allFL = await localDatabase!.allFloorLayouts;
+  var allUri = allFL.map((fl) => Uri.parse(fl.layoutImageUrl));
+  evictAllFromCache(allUri);
+  preCacheImages(allUri);
+}
 
 abstract mixin class Fetcher {
   Future<Iterable<Schema>> getAllFromRemote() async {
@@ -31,13 +39,37 @@ abstract mixin class Fetcher {
   }
 }
 
+abstract class Schema {}
+
 class SchemaFetcher extends ChangeNotifier {
   final AppContext appContext;
-  SchemaFetcher({required this.appContext});
-
   String? lastUpdate;
 
   final SPStringPair _lastModifiedDateStore = SPStringPair('lastModifiedDate');
+
+  SchemaFetcher({required this.appContext});
+
+  Future<bool> checkForUpdate() async {
+    String latestDate = await getLatestChangeDate();
+    return latestDate != await _lastModifiedDateStore.get();
+  }
+
+  // Check for update. Return true if update is needed.
+  Future<bool> checkForUpdateAndUpdate() async {
+    String latestDate = await getLatestChangeDate();
+
+    if (latestDate != await _lastModifiedDateStore.get()) {
+      localDatabase!.updateDatabase();
+      await updateLatestChangeDate(latestDate);
+      await preCacheFloorLayouts();
+
+      router = await RoomGraph.create();
+
+      return true;
+    }
+
+    return false;
+  }
 
   // this should only be used for debugging purposes
   Future<void> debugDeleteDate() async {
@@ -55,23 +87,5 @@ class SchemaFetcher extends ChangeNotifier {
     await _lastModifiedDateStore.set(latestDate);
     lastUpdate = latestDate;
     notifyListeners();
-  }
-
-  Future<bool> checkForUpdate() async {
-    String latestDate = await getLatestChangeDate();
-    return latestDate != await _lastModifiedDateStore.get();
-  }
-
-  // Check for update. Return true if update is needed.
-  Future<bool> checkForUpdateAndUpdate() async {
-    String latestDate = await getLatestChangeDate();
-
-    if (latestDate != await _lastModifiedDateStore.get()) {
-      localDatabase!.updateDatabase();
-      await updateLatestChangeDate(latestDate);
-      return true;
-    }
-
-    return false;
   }
 }

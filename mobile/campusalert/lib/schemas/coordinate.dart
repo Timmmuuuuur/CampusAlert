@@ -2,6 +2,7 @@ import 'package:campusalert/api_service.dart';
 import 'package:campusalert/schemas/database.dart';
 import 'package:campusalert/schemas/schema.dart';
 import 'package:drift/drift.dart';
+import 'package:latlong2/latlong.dart';
 
 class Coordinate {
   double latitude;
@@ -24,6 +25,10 @@ class Coordinate {
       latitude: map['latitude'],
       longitude: map['longitude'],
     );
+  }
+
+  LatLng toLatLng() {
+    return LatLng(latitude, longitude);
   }
 
   /* static Coordinate load(int id, double latitude, double longitude) =>
