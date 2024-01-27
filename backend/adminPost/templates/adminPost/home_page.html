@@ -1,0 +1,14 @@
+<!-- adminPost/templates/adminPost/home_page.html -->
+{% extends 'adminPost_base.html' %}
+
+{% block title %}Admin Post Home Page{% endblock %}
+
+{% block content %}
+    <h2>Welcome to the Admin Post Home Page</h2>
+    <p>Here is a list of posted items:</p>
+    <ul>
+        {% for post in posts %}
+            <li><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock %}

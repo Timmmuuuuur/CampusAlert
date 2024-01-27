@@ -1,0 +1,13 @@
+<!-- templates/adminPost/blogpost_list.html -->
+{% extends 'adminPost_base.html' %}
+
+{% block title %}Blog Post List{% endblock %}
+
+{% block content %}
+    <h2>Blog Post List</h2>
+    <ul>
+        {% for post in object_list %}
+            <li><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock %}
