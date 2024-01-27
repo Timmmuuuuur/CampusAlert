@@ -4,7 +4,7 @@
 from django import forms
 from .models import BlogPost
 
-class BlogPostForm(forms.ModelForm):
+class BlogPostForm(forms.ModelForm): # a form for submitting posters and announcements
     # Add an image field for photo uploads
     photo = forms.ImageField(required=False, label='Upload Photo')
 

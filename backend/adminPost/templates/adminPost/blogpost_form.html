@@ -1,0 +1,11 @@
+<!-- adminPost/templates/adminPost/blogpost_form.html -->
+{% extends 'adminPost_base.html' %}
+
+{% block content %}
+  <h2>Create a New Blog Post</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Submit</button>
+  </form>
+{% endblock %}

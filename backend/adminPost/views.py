@@ -5,8 +5,17 @@ from django.shortcuts import render
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView, CreateView
 from .models import BlogPost
+from .forms import BlogPostForm # user submit post, criteria form
+from django.views.generic import TemplateView
+from django.urls import reverse_lazy
 
-class BlogPostListView(ListView):
+
+
+
+class AdminPostHomePageView(TemplateView): #home page, view list of post
+    template_name = 'adminPost/home_page.html'
+
+class BlogPostListView(ListView): #retrieves a specific post
     model = BlogPost
     template_name = 'adminPost/blogpost_list.html'
     context_object_name = 'posts'
@@ -17,10 +26,23 @@ class BlogPostDetailView(DetailView):
     context_object_name = 'post'
 
 class BlogPostCreateView(CreateView):
-    model = BlogPost
-    template_name = 'adminPost/blogpost_form.html'
-    fields = ['title', 'content']  # Add other fields as needed
 
-    def form_valid(self, form):
-        form.instance.author = self.request.user  # Assuming you have an 'author' field in your BlogPost model
-        return super().form_valid(form)
+    template_name = 'adminPost/blogpost_form.html'  # Replace with your actual template name
+    model = BlogPost
+    form_class = BlogPostForm
+    success_url = reverse_lazy('adminPost_home')  # Replace with your actual success URL, 
+    # need to path name (3rd arg in) url pattern
+
+    def get(self, request, *args, **kwargs):
+        form = BlogPostForm()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = BlogPostForm(request.POST)
+        if form.is_valid():
+            # Process the form data
+            # Save the form or perform other actions
+
+             return super().form_valid(form) # return home page, or caller page
+        else:
+            return self.form_invalid(form)

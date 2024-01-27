@@ -2,7 +2,7 @@
 # like a non-SQL database, to describe a schema
 from django.db import models
 
-class BlogPost(models.Model):
+class BlogPost(models.Model): 
     title = models.CharField(max_length=255)
     content = models.TextField()
     pub_date = models.DateTimeField(auto_now_add=True)
