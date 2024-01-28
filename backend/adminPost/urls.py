@@ -3,6 +3,9 @@ from django.urls import path
 from .views import BlogPostListView, BlogPostDetailView, BlogPostCreateView, AdminPostHomePageView
 
 
+
+
+
 urlpatterns = [
     #path('posts/', BlogPostListView.as_view(), name='post_list'),
     path('adminPost_home/', AdminPostHomePageView.as_view(), name='adminPost_home'),

@@ -1,14 +1,27 @@
-<!-- adminPost/templates/adminPost/home_page.html -->
 {% extends 'adminPost_base.html' %}
+
+{% load static %} 
 
 {% block title %}Admin Post Home Page{% endblock %}
 
 {% block content %}
-    <h2>Welcome to the Admin Post Home Page</h2>
-    <p>Here is a list of posted items:</p>
-    <ul>
+<link rel="stylesheet" type="text/css" href="{% static 'adminPost/css/style.css' %}">
+
+   <!--  <h2>Welcome to the Admin Post Home Page</h2> -->
+    <div class="post-container">
         {% for post in posts %}
-            <li><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></li>
+            <div class="post">
+                <div class="post-header">
+                    <a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a>
+                    <p>Posted on: {{ post.pub_date }}</p>
+                </div>
+                <div class="post-content">
+                    <p>{{ post.content }}</p>
+                </div>
+                {% if post.photo %}
+                    <img src="{{ post.photo.url }}" alt="{{ post.title }} Photo" class="post-image">
+                {% endif %}
+            </div>
         {% endfor %}
-    </ul>
+    </div>
 {% endblock %}

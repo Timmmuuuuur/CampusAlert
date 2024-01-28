@@ -1,10 +1,15 @@
 <!-- templates/adminPost/blogpost_detail.html -->
 {% extends 'adminPost_base.html' %}
 
-{% block title %}{{ object.title }}{% endblock %}
+{% block title %}{{ post.title }}{% endblock %}
 
 {% block content %}
-    <h2>{{ object.title }}</h2>
-    <p>{{ object.content }}</p>
+    <h2>{{ post.title }}</h2>
+    <p>{{ post.content }}</p>
+    
+    {% if post.photo %}
+        <img src="{{ post.photo.url }}" alt="{{ post.title }} Photo">
+    {% endif %}
+    
     <!-- Include any other details you want to display -->
 {% endblock %}
