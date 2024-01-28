@@ -143,7 +143,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = 'America/Toronto' # timestamp in: adminPost
+
 
 USE_I18N = True
 
