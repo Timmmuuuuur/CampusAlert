@@ -3,10 +3,13 @@ import 'dart:io';
 import 'package:campusalert/account_page.dart';
 import 'package:campusalert/alert/alert.dart';
 import 'package:campusalert/alert/alert_route.dart';
+import 'package:campusalert/alert/threat.dart';
 import 'package:campusalert/api_service.dart';
 import 'package:campusalert/building_prompt_page.dart';
 import 'package:campusalert/components/image_overlay.dart';
+import 'package:campusalert/schemas/building.dart';
 import 'package:campusalert/schemas/database.dart';
+import 'package:campusalert/schemas/floor.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -157,7 +160,10 @@ class App extends StatelessWidget {
               initialRoute: autoLoginSuccess ? '/main_app' : '/',
               routes: {
                 '/': (context) => LoginPage(),
-                '/main_app': (context) => NavigationRoot(),
+                '/main_app': (context) => PopScope(
+                  canPop: false, 
+                  child: NavigationRoot()
+                ),
               },
               theme: ThemeData(
                   useMaterial3: true,
@@ -185,18 +191,18 @@ class AppState extends ChangeNotifier {
   }
 
   // emergency information
-  SyncAlert? currentSyncalert;
-  AlertRoute alertRoute;
 
-  var count = 1;
+  // This is a list of emergency route pages we still need to go through. Pages can be dynamically pushed to it.
+  AlertRoute alertRoute = AlertRoute();
+
+  // For each new field to keep track of, we need to add more stuff to clearEmergency()
+  SyncThreat? selectedSyncThreat;
+  Building? selectedBuilding;
+  Floor? selectedFloor;
+
   var selectedPageIndex = 0;
 
   String lastMessage = "";
-
-  void increment() {
-    count += 1;
-    notifyListeners();
-  }
 
   void selectPage(int index) {
     selectedPageIndex = index;
@@ -212,6 +218,28 @@ class AppState extends ChangeNotifier {
     } else {
       lastMessage = 'Received a data message: ${message.data}';
     }
+    notifyListeners();
+  }
+
+  void clearEmergency() {
+    selectedSyncThreat = null;
+    selectedBuilding = null;
+    selectedFloor = null;
+    notifyListeners();
+  }
+
+  void updateSelectedSyncThreat(SyncThreat newVal) {
+    selectedSyncThreat = newVal;
+    notifyListeners();
+  }
+
+  void updateSelectedBuilding(Building newVal) {
+    selectedBuilding = newVal;
+    notifyListeners();
+  }
+
+  void updateSelectedFloor(Floor newVal) {
+    selectedFloor = newVal;
     notifyListeners();
   }
 }

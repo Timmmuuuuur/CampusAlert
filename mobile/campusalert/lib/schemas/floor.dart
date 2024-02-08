@@ -20,6 +20,7 @@ class Floor extends Schema implements Insertable<Floor> {
 
   Set<RoomNode>? _allRoomNodesMemoization;
   Set<RoomEdge>? _allRoomEdgesMemoization;
+  static Set<Floor>? _allFloorsMemoization;
 
   Floor({
     required this.id,
@@ -46,6 +47,13 @@ class Floor extends Schema implements Insertable<Floor> {
     return fl;
   }
 
+  static Future<Set<Floor>> all() async {
+    _allFloorsMemoization ??=
+        (await (localDatabase!.floorTable.select()).get()).toSet();
+
+    return _allFloorsMemoization!;
+  }
+
   Future<Set<RoomNode>> get allRoomNodes async {
     _allRoomNodesMemoization ??= (await (localDatabase!.roomNodeTable.select()
               ..where((u) => u.floorId.equals(id)))
@@ -61,7 +69,9 @@ class Floor extends Schema implements Insertable<Floor> {
     Set<int> roomNodeAsIds =
         (await allRoomNodes).map((roomNode) => roomNode.id).toSet();
 
-    _allRoomEdgesMemoization ??= roomEdgeUniverse.where((roomEdge) => roomEdge.roomIds.any(roomNodeAsIds.contains)).toSet();
+    _allRoomEdgesMemoization ??= roomEdgeUniverse
+        .where((roomEdge) => roomEdge.roomIds.any(roomNodeAsIds.contains))
+        .toSet();
 
     return _allRoomEdgesMemoization!;
   }
@@ -81,6 +91,11 @@ class Floor extends Schema implements Insertable<Floor> {
       bottomLeftLatitude: Value(bottomLeft.latitude),
       bottomLeftLongitude: Value(bottomLeft.longitude),
     ).toColumns(nullToAbsent);
+  }
+
+  @override
+  String toString() {
+    return "Floor $floorNumber";
   }
 
   // Future<DenormFloor> denormalize() async {
