@@ -1,4 +1,7 @@
 # CampusAlert
+#dependecy in pubspec.yaml, run at pubspec.yaml directory
+flutter pub get
+
 
 ## Development
 It is highly recommended that you use Visual Studio Code to do developments. See this for setting up the environment: https://codelabs.developers.google.com/codelabs/flutter-codelab-first#1

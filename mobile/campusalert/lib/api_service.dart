@@ -1,20 +1,37 @@
+import 'package:campusalert/config.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import 'dart:io';
 import 'package:jwt_decoder/jwt_decoder.dart';
 
 import 'package:campusalert/auth.dart';
 import 'package:campusalert/local_store.dart';
+// Import the config file
+
 
 class APIService {
   // TODO: Development URL. Change this to production later.
-  static final String baseURL = "10.0.2.2:8080";
+  static final String baseURL = AppConfig.flutterServerAddress;//"10.0.2.2:8080"
 
   static Future<http.Response> post(
       String path, Map<String, String> headers, String body) {
     var url = Uri.http(baseURL, path);
     return http.post(url, headers: headers, body: body);
+  }
+
+
+  static Future<void> listenForCustomNotifications() async {
+  http.Server server = await http.bind(http.InternetAddress.anyIPv4, 8080);
+  await for (var request in server) {
+    if (request.method == 'POST' && request.uri.path == '/adimPost_notification') {
+      // Handle the custom notification data here
+      print('Received custom notification: ${request.body}');
+      // Implement your custom notification handling logic here
+    } else {
+      request.response.statusCode = 404;
+      request.response.write('Not found');
+      await request.response.close();
+    }
+  }
   }
 
   static Future<http.Response> get(String path, Map<String, String> headers) {
@@ -25,6 +42,7 @@ class APIService {
   static Future<http.Response> getByUri(Uri uri, Map<String, String> headers) {
     return http.get(uri, headers: headers);
   }
+    }
 
   static Future<Map<String, dynamic>> postLogin(
       String path, Map<String, dynamic> body) async {
@@ -136,4 +154,4 @@ class APIService {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('refresh_token');
   } */
-}
+
