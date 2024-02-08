@@ -1,4 +1,5 @@
 import 'package:campusalert/building_prompt_page.dart';
+import 'package:campusalert/components/alert_route_page.dart';
 import 'package:campusalert/schemas/schema.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -20,27 +21,12 @@ class EmergencyAlertPage extends StatelessWidget {
 
     return Column(
       children: [
-        // ElevatedButton(
-        //   onPressed: () {
-        //     // Navigate to the SecondPage when the button is pressed
-        //     Navigator.push(
-        //       context,
-        //       MaterialPageRoute(builder: (context) => BuildingPromptPage()),
-        //     );
-        //   },
-        //   child: Text('Go to Second Page'),
-        // ),
-
         title.Title(text: 'EMERGENCY ALERT SWITCH'),
-        Text(appState.appContext.fcmToken ?? "[No token]"),
         Text(appState.lastMessage),
         DragActivationComponent(
           onActivate: () {
-            print("Swipping done!");
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => BuildingPromptPage()),
-            );
+            appState.clearEmergency();
+            appState.alertRoute.begin(context, defaultPages());
           },
         ),
         Text(
