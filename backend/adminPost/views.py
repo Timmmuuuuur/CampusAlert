@@ -1,5 +1,6 @@
 from django.shortcuts import render
 
+
 # Create your views here.
 # adminPost/views.py
 from django.shortcuts import render
@@ -8,6 +9,9 @@ from .models import BlogPost
 from .forms import BlogPostForm # user submit post, criteria form
 from django.views.generic import TemplateView
 from django.urls import reverse_lazy
+
+import requests
+from django.http import JsonResponse
 
 
 
@@ -43,6 +47,33 @@ class BlogPostCreateView(CreateView):
         # Process the form data
         # Save the form or perform other actions
         return super().form_valid(form)
+        
+    def send_to_flutter_notification(self, data):
+        # Define the URL of the Flutter endpoint
+        flutter_endpoint = 'http://<flutter_server_address>/adimPost_notification'
+
+        # Extract picture data if available
+        picture_data = None
+        if 'photo' in data:
+            picture_data = data.pop('photo')  # Remove picture data from the main data
+
+        # Construct the payload to send to Flutter
+        payload = {'blog_post_data': data}
+
+        # Send picture data if available
+        if picture_data:
+            files = {'photo': picture_data}
+        else:
+            files = None
+
+        # Make a POST request to the Flutter endpoint
+        response = requests.post(flutter_endpoint, data=payload, files=files)
+
+        # Check if the request was successful
+        if response.status_code == 200:
+            print('Notification sent to Flutter successfully')
+        else:
+            print('Failed to send notification to Flutter')
 
     def get(self, request, *args, **kwargs):
         form = BlogPostForm()
@@ -54,3 +85,31 @@ class BlogPostCreateView(CreateView):
             return super().form_valid(form)
         else:
             return self.form_invalid(form)
+
+
+
+def send_notification(request):
+    # Assuming you receive the device token and notification data from the Flutter app
+    device_token = request.POST.get('device_token')
+    notification_data = {
+        'title': 'Your notification title',
+        'body': 'Your notification body'
+    }
+    
+    # Send notification to FCM
+    fcm_url = 'https://fcm.googleapis.com/fcm/send'
+    fcm_key = 'YOUR_FCM_SERVER_KEY'  # Get this from your Firebase project settings
+    headers = {
+        'Authorization': 'key=' + fcm_key,
+        'Content-Type': 'application/json'
+    }
+    payload = {
+        'to': device_token,
+        'notification': notification_data
+    }
+    response = requests.post(fcm_url, headers=headers, json=payload)
+
+    if response.status_code == 200:
+        return JsonResponse({'success': True})
+    else:
+        return JsonResponse({'success': False, 'error': response.text})
