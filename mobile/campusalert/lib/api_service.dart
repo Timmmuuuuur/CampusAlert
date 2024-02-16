@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:jwt_decoder/jwt_decoder.dart';
 
+
 import 'package:campusalert/auth.dart';
 import 'package:campusalert/local_store.dart';
 // Import the config file
@@ -10,29 +11,40 @@ import 'package:campusalert/local_store.dart';
 
 class APIService {
   // TODO: Development URL. Change this to production later.
-  static final String baseURL = AppConfig.flutterServerAddress;//"10.0.2.2:8080"
+  static final String baseURL = AppConfig
+      .flutterServerAddress; //"10.0.2.2:8080"
 
-  static Future<http.Response> post(
-      String path, Map<String, String> headers, String body) {
+  static Future<http.Response> post(String path, Map<String, String> headers,
+      String body) {
     var url = Uri.http(baseURL, path);
     return http.post(url, headers: headers, body: body);
   }
 
 
-  static Future<void> listenForCustomNotifications() async {
-  http.Server server = await http.bind(http.InternetAddress.anyIPv4, 8080);
-  await for (var request in server) {
-    if (request.method == 'POST' && request.uri.path == '/adimPost_notification') {
-      // Handle the custom notification data here
-      print('Received custom notification: ${request.body}');
-      // Implement your custom notification handling logic here
+  Future<void> fetchData() async {
+    // Define the backend URL
+    // Call the fetchData function to initiate the data retrieval process
+    //fetchData();
+    String backendUrl = baseURL;
+
+    // Make an HTTP GET request to the backend endpoint
+    http.Response response = await http.get(
+        Uri.parse('$backendUrl/server_path/adimPost_notification'));
+
+    // Check if the request was successful (status code 200)
+    if (response.statusCode == 200) {
+      // Parse the response body (assuming it's in JSON format)
+      Map<String, dynamic> data = json.decode(response.body);
+
+      // Handle the received data here
+      // For example, print the data to the console
+      print('Received data: $data');
     } else {
-      request.response.statusCode = 404;
-      request.response.write('Not found');
-      await request.response.close();
+      // If the request was not successful, print the error
+      print('Failed to fetch data. Status code: ${response.statusCode}');
     }
   }
-  }
+
 
   static Future<http.Response> get(String path, Map<String, String> headers) {
     var url = Uri.http(baseURL, path);
@@ -42,22 +54,23 @@ class APIService {
   static Future<http.Response> getByUri(Uri uri, Map<String, String> headers) {
     return http.get(uri, headers: headers);
   }
-    }
 
-  static Future<Map<String, dynamic>> postLogin(
-      String path, Map<String, dynamic> body) async {
+
+  static Future<Map<String, dynamic>> postLogin(String path,
+      Map<String, dynamic> body) async {
     return json.decode((await post(
-            path,
-            {
-              'Content-Type': 'application/json',
-            },
-            jsonEncode(body)))
+        path,
+        {
+          'Content-Type': 'application/json',
+        },
+        jsonEncode(body)))
         .body);
   }
 
+
   // post and get format in JSON and with authentication token
-  static Future<Map<String, dynamic>> postCommon(
-      String path, Map<String, dynamic> body) async {
+  static Future<Map<String, dynamic>> postCommon(String path,
+      Map<String, dynamic> body) async {
     return json.decode(
         (await post(path, await getCommonHeaders(), jsonEncode(body))).body);
   }
@@ -67,7 +80,7 @@ class APIService {
     return json.decode((await get(path, await getCommonHeaders())).body);
   }
 
-    static Future<Map<String, dynamic>> getCommonWithUri(Uri uri) async {
+  static Future<Map<String, dynamic>> getCommonWithUri(Uri uri) async {
     return json.decode((await getByUri(uri, await getCommonHeaders())).body);
   }
 
@@ -145,7 +158,7 @@ class APIService {
     return token;
   }
 
-  /* Future<void> storeRefreshToken(String token) async {
+/* Future<void> storeRefreshToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('refresh_token', token);
   }
@@ -154,4 +167,4 @@ class APIService {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('refresh_token');
   } */
-
+}
