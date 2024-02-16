@@ -4,13 +4,14 @@ import 'package:campusalert/account_page.dart';
 import 'package:campusalert/api_service.dart';
 import 'package:campusalert/building_prompt_page.dart';
 import 'package:campusalert/schemas/database.dart';
+import 'package:drift/src/runtime/api/runtime_api.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-
+import 'local_store.dart' as local_store;
 import 'package:rxdart/rxdart.dart';
 
 import 'login_page.dart';
@@ -125,6 +126,14 @@ class App extends StatelessWidget {
     }
   }
 
+
+
+
+
+
+
+
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<bool>(
@@ -210,13 +219,21 @@ class AppState extends ChangeNotifier {
 class NavigationRoot extends StatelessWidget {
   static List<Widget> _pages = <Widget>[
     EmergencyAlertPage(),
-    DriftDbViewer(localDatabase!),
+    DriftDbViewer(local_store.SPStringPair("k") as GeneratedDatabase),
+    /* change this hard coded "k" to
+    class NavigationRoot extends StatelessWidget {
+    final String key;
+
+  NavigationRoot({required this.key});
+    */
+
     Icon(
       Icons.chat,
       size: 150,
     ),
     AccountPage(),
   ];
+
 
   @override
   Widget build(BuildContext context) {
