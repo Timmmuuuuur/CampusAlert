@@ -330,7 +330,7 @@ def history_latest_change(request):
 
 @api_view(['POST'])
 def create_alert(request):
-    if Alert.objects.filter(time__isnull=False).exists():
+    if Alert.objects.filter(is_active=True).exists():
         return Response({"error": "An active alert already exists."}, status=status.HTTP_400_BAD_REQUEST)
     
     serializer = AlertSerializer(data=request.data)
@@ -356,16 +356,16 @@ def update_alert(request, pk):
 
 @api_view(['GET'])
 def check_active_alert(request):
-    if Alert.objects.filter(time__isnull=False).exists():
+    if Alert.objects.filter(is_active=True).exists():
         return Response({"active_alert": True})
     return Response({"active_alert": False})
 
 
 @api_view(['PUT'])
 def turn_off_alert(request):
-    if Alert.objects.filter(time__isnull=False).exists():
-        alert = Alert.objects.filter(time__isnull=False).first()
-        alert.time = None
+    if Alert.objects.filter(is_active=True).exists():
+        alert = Alert.objects.filter(is_active=True).first()
+        alert.is_active = False
         alert.save()
         return Response({"message": "Alert turned off successfully"})
     return Response({"error": "No active alert found."}, status=status.HTTP_400_BAD_REQUEST)
