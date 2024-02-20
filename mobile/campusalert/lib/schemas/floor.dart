@@ -1,3 +1,6 @@
+import 'dart:math';
+import 'dart:ui';
+
 import 'package:campusalert/api_service.dart';
 import 'package:campusalert/schemas/building.dart';
 import 'package:campusalert/schemas/coordinate.dart';
@@ -18,8 +21,8 @@ class Floor extends Schema implements Insertable<Floor> {
   Coordinate topRight;
   Coordinate bottomLeft;
 
-  Set<RoomNode>? _allRoomNodesMemoization;
-  Set<RoomEdge>? _allRoomEdgesMemoization;
+  static Set<RoomNode>? _allRoomNodesMemoization;
+  static Set<RoomEdge>? _allRoomEdgesMemoization;
   static Set<Floor>? _allFloorsMemoization;
 
   Floor({
@@ -32,6 +35,11 @@ class Floor extends Schema implements Insertable<Floor> {
     required this.topRight,
     required this.bottomLeft,
   });
+
+  static void removeAllMemoization() {
+    _allRoomEdgesMemoization = null;
+    _allRoomNodesMemoization = null;
+  }
 
   Future<Building> get building async {
     var b = await Building.getById(buildingId);
@@ -63,6 +71,31 @@ class Floor extends Schema implements Insertable<Floor> {
     return _allRoomNodesMemoization!;
   }
 
+  static double _distance(double x1, double y1, double x2, double y2) {
+    return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
+  }
+
+  Future<RoomNode?> closestRoomNode(Offset point) async {
+    var roomNodes = await allRoomNodes;
+    if (roomNodes.isEmpty) {
+      return null;
+    }
+
+    RoomNode closest = roomNodes.first;
+    double minDistance =
+        _distance(roomNodes.first.x, roomNodes.first.y, point.dx, point.dy);
+
+    for (var roomNode in roomNodes) {
+      double distance = _distance(roomNode.x, roomNode.y, point.dx, point.dy);
+      if (distance < minDistance) {
+        minDistance = distance;
+        closest = roomNode;
+      }
+    }
+
+    return closest;
+  }
+
   Future<Set<RoomEdge>> get allRoomEdges async {
     Set<RoomEdge> roomEdgeUniverse =
         (await (localDatabase!.roomEdgeTable.select()).get()).toSet();
@@ -75,6 +108,13 @@ class Floor extends Schema implements Insertable<Floor> {
 
     return _allRoomEdgesMemoization!;
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || (other is Floor && id == other.id);
+
+  @override
+  int get hashCode => id.hashCode;
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {

@@ -32,6 +32,10 @@ class Building extends Schema implements Insertable<Building> {
     required this.name,
   });
 
+  static void removeAllMemoization() {
+    _allBuildingsMemoization = null;
+  }
+
   // TODO: complete these methods for other schemas
   static Building load(int id, String name) => Building(id: id, name: name);
 
@@ -46,8 +50,8 @@ class Building extends Schema implements Insertable<Building> {
   Future<Set<Floor>> allFloors() async {
     _allFloorsMemoization ??=
         (await (localDatabase!.select(localDatabase!.floorTable)
-            ..where((t) => t.buildingId.equals(id)))
-            .get())
+                  ..where((t) => t.buildingId.equals(id)))
+                .get())
             .toSet();
 
     return _allFloorsMemoization!;

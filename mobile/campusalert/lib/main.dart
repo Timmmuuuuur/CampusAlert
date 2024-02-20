@@ -10,6 +10,7 @@ import 'package:campusalert/components/image_overlay.dart';
 import 'package:campusalert/schemas/building.dart';
 import 'package:campusalert/schemas/database.dart';
 import 'package:campusalert/schemas/floor.dart';
+import 'package:campusalert/schemas/roomnode.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -160,10 +161,8 @@ class App extends StatelessWidget {
               initialRoute: autoLoginSuccess ? '/main_app' : '/',
               routes: {
                 '/': (context) => LoginPage(),
-                '/main_app': (context) => PopScope(
-                  canPop: false, 
-                  child: NavigationRoot()
-                ),
+                '/main_app': (context) =>
+                    PopScope(canPop: false, child: NavigationRoot()),
               },
               theme: ThemeData(
                   useMaterial3: true,
@@ -199,6 +198,7 @@ class AppState extends ChangeNotifier {
   SyncThreat? selectedSyncThreat;
   Building? selectedBuilding;
   Floor? selectedFloor;
+  RoomNode? selectedRoom;
 
   var selectedPageIndex = 0;
 
@@ -225,7 +225,7 @@ class AppState extends ChangeNotifier {
     selectedSyncThreat = null;
     selectedBuilding = null;
     selectedFloor = null;
-    notifyListeners();
+    selectedRoom = null;
   }
 
   void updateSelectedSyncThreat(SyncThreat newVal) {
@@ -240,6 +240,11 @@ class AppState extends ChangeNotifier {
 
   void updateSelectedFloor(Floor newVal) {
     selectedFloor = newVal;
+    notifyListeners();
+  }
+
+  void updateSelectedRoom(RoomNode newVal) {
+    selectedRoom = newVal;
     notifyListeners();
   }
 }
