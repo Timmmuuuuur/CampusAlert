@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Coordinate, Building, Floor, FloorLayout, RoomNode, RoomEdge
+from .models import Alert, Coordinate, Building, Floor, FloorLayout, RoomNode, RoomEdge
 
 class CoordinateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -72,3 +72,9 @@ class RoomEdgeSerializer(serializers.ModelSerializer):
     class Meta:
         model = RoomEdge
         fields = '__all__'
+
+
+class AlertSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Alert
+        fields = ['id', 'syncThreat', 'building', 'floor', 'roomNode', 'time']
