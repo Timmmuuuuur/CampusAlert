@@ -9,10 +9,13 @@ from fcm_django.models import FCMDevice
 from firebase_admin.messaging import Message, Notification
 from rest_framework import generics
 from rest_framework.parsers import JSONParser
-from .serializers import RoomNodeSerializer, RoomEdgeSerializer, FloorLayoutSerializer, FloorSerializer, BuildingSerializer
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .serializers import AlertSerializer, RoomNodeSerializer, RoomEdgeSerializer, FloorLayoutSerializer, FloorSerializer, BuildingSerializer
 
 from .forms import BuildingForm, FloorForm, FloorLayoutForm, UploadRoomCSVForm
-from .models import Coordinate, Floor, FloorLayout, RoomEdge, RoomNode, Building
+from .models import Alert, Coordinate, Floor, FloorLayout, RoomEdge, RoomNode, Building
 
 
 def call_notification(title, body):
@@ -324,3 +327,45 @@ def history_latest_change(request):
         'date': str(max(results)),
     })
     
+
+@api_view(['POST'])
+def create_alert(request):
+    if Alert.objects.filter(time__isnull=False).exists():
+        return Response({"error": "An active alert already exists."}, status=status.HTTP_400_BAD_REQUEST)
+    
+    serializer = AlertSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['PUT'])
+def update_alert(request, pk):
+    try:
+        alert = Alert.objects.get(pk=pk)
+    except Alert.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    serializer = AlertSerializer(alert, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def check_active_alert(request):
+    if Alert.objects.filter(time__isnull=False).exists():
+        return Response({"active_alert": True})
+    return Response({"active_alert": False})
+
+
+@api_view(['PUT'])
+def turn_off_alert(request):
+    if Alert.objects.filter(time__isnull=False).exists():
+        alert = Alert.objects.filter(time__isnull=False).first()
+        alert.time = None
+        alert.save()
+        return Response({"message": "Alert turned off successfully"})
+    return Response({"error": "No active alert found."}, status=status.HTTP_400_BAD_REQUEST)

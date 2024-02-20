@@ -196,3 +196,20 @@ class RoomEdge(models.Model):
 
     def __str__(self):
         return '→'.join([str(n) for n in self.nodes.all()])
+
+
+class Alert(models.Model):
+    SYNC_THREAT_CHOICES = [
+        ('fire', 'Fire'),
+        ('attacker', 'Attacker'),
+        ('storm', 'Storm'),
+    ]
+
+    syncThreat = models.CharField(max_length=10, choices=SYNC_THREAT_CHOICES)
+    building = models.ForeignKey(Building, on_delete=models.CASCADE)
+    floor = models.ForeignKey(Floor, on_delete=models.CASCADE)
+    roomNode = models.ForeignKey(RoomNode, on_delete=models.CASCADE)
+    time = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.syncThreat} Alert at {self.roomNode} - {self.time}"
