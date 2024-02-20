@@ -210,6 +210,7 @@ class Alert(models.Model):
     floor = models.ForeignKey(Floor, on_delete=models.CASCADE)
     roomNode = models.ForeignKey(RoomNode, on_delete=models.CASCADE)
     time = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return f"{self.syncThreat} Alert at {self.roomNode} - {self.time}"

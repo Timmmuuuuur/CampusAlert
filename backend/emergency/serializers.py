@@ -77,4 +77,4 @@ class RoomEdgeSerializer(serializers.ModelSerializer):
 class AlertSerializer(serializers.ModelSerializer):
     class Meta:
         model = Alert
-        fields = ['id', 'syncThreat', 'building', 'floor', 'roomNode', 'time']
+        fields = ['id', 'syncThreat', 'building', 'floor', 'roomNode', 'time', 'is_active']
