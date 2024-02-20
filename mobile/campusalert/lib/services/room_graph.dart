@@ -6,6 +6,8 @@ import 'package:latlong2/latlong.dart';
 
 class RoomGraph extends Graph<RoomNode> {
   late Iterable<RoomNode> _allNodes;
+  late Set<RoomNode> _allExits;
+  late AStar<RoomNode> astar;
   final Distance distance = Distance();
 
   RoomGraph._();
@@ -13,6 +15,8 @@ class RoomGraph extends Graph<RoomNode> {
   static Future<RoomGraph> create() async {
     var inst = RoomGraph._();
     inst._allNodes = await RoomNode.allNodes;
+    inst._allExits = await RoomNode.allExits;
+    inst.astar = AStar(inst);
     return inst;
   }
 
@@ -26,15 +30,19 @@ class RoomGraph extends Graph<RoomNode> {
       );
 
   @override
-  num getHeuristicDistance(RoomNode a, Set<RoomNode> goals) => 
-    goals .map((g) => distance(
-        a.latlong.toLatLng(),
-        g.latlong.toLatLng(),
-      ))
+  num getHeuristicDistance(RoomNode a, Set<RoomNode> goals) => goals
+      .map((g) => distance(
+            a.latlong.toLatLng(),
+            g.latlong.toLatLng(),
+          ))
       .reduce((val, el) => min(val, el));
 
   @override
   Future<Iterable<RoomNode>> getNeighboursOf(RoomNode node) {
     return node.neighbours;
+  }
+
+  Future<List<RoomNode>> getRoute(RoomNode start) async {
+    return (await astar.findPath(start, _allExits)).toList();
   }
 }

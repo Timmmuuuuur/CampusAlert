@@ -1,4 +1,5 @@
 import 'package:campusalert/api_service.dart';
+import 'package:campusalert/components/image_overlay.dart';
 import 'package:campusalert/schemas/coordinate.dart';
 import 'package:campusalert/schemas/database.dart';
 import 'package:campusalert/schemas/floor.dart';
@@ -6,7 +7,9 @@ import 'package:campusalert/schemas/schema.dart';
 import 'package:campusalert/services/a_star.dart';
 import 'package:drift/drift.dart';
 
-class RoomNode extends Schema with Node<RoomNode> implements Insertable<RoomNode> {
+class RoomNode extends Schema
+    with Node<RoomNode>
+    implements Insertable<RoomNode> {
   int id;
   int floorId;
   String name;
@@ -16,6 +19,7 @@ class RoomNode extends Schema with Node<RoomNode> implements Insertable<RoomNode
   Coordinate latlong;
   Set<RoomNode>? _neighbourMemoization;
   static Set<RoomNode>? _allNodesMemoization;
+  static Set<RoomNode>? _allExitsMemoization;
 
   RoomNode({
     required this.id,
@@ -54,10 +58,27 @@ class RoomNode extends Schema with Node<RoomNode> implements Insertable<RoomNode
     return _neighbourMemoization!;
   }
 
+  Point get point {
+    return Point(x, y);
+  }
+
+  static void removeAllMemoization() {
+    _allNodesMemoization = null;
+    _allExitsMemoization = null;
+  }
+
   static Future<Set<RoomNode>> get allNodes async {
     _allNodesMemoization ??=
         (await (localDatabase!.roomNodeTable.select()).get()).toSet();
     return _allNodesMemoization!;
+  }
+
+  static Future<Set<RoomNode>> get allExits async {
+    _allExitsMemoization ??= (await (localDatabase!.roomNodeTable.select()
+              ..where((t) => t.isExit.equals(true)))
+            .get())
+        .toSet();
+    return _allExitsMemoization!;
   }
 
   Future<Floor> get floor async {

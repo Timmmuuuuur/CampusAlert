@@ -93,5 +93,8 @@ RoomGraph? router;
 Future<void> initializeDatabase() async {
   // WidgetsFlutterBinding.ensureInitialized();
   localDatabase = LocalDatabase();
+  RoomNode.removeAllMemoization();
+  Floor.removeAllMemoization();
+  Building.removeAllMemoization(); // NOTE: Only static fields are removed!
   router = await RoomGraph.create();
 }

@@ -132,7 +132,7 @@ class ImageOverlayPainter extends CustomPainter {
       canvas.drawCircle(
         Offset(point.x / imageWidth * size.width,
             point.y / imageHeight * size.height),
-        2, // Radius of the circle
+        8, // Radius of the circle
         defaultPaint,
       );
     }
