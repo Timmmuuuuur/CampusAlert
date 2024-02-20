@@ -21,4 +21,8 @@ urlpatterns = [
 
     path('changes/latest', history_latest_change, name='history_latest_change')
 
+    path('alert/create/', views.create_alert),
+    path('alert/update/<int:pk>/', views.update_alert),
+    path('alert/check/', views.check_active_alert),
+    path('alert/turn-off/', views.turn_off_alert),
 ]
