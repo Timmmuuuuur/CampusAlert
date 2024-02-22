@@ -1,7 +1,9 @@
+from django.conf import settings
+from django.forms import ChoiceField
 import numpy as np
 import pandas as pd
 from django.db.models import Q
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
@@ -10,9 +12,12 @@ from firebase_admin.messaging import Message, Notification
 from rest_framework import generics
 from rest_framework.parsers import JSONParser
 from rest_framework import status
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .serializers import AlertSerializer, RoomNodeSerializer, RoomEdgeSerializer, FloorLayoutSerializer, FloorSerializer, BuildingSerializer
+from .serializers import AlertCompleteSerializer, AlertSerializer, RoomNodeSerializer, RoomEdgeSerializer, FloorLayoutSerializer, FloorSerializer, BuildingSerializer
+from django.contrib.auth.decorators import login_required
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from django.contrib.auth.decorators import user_passes_test
 
 from .forms import BuildingForm, FloorForm, FloorLayoutForm, UploadRoomCSVForm
 from .models import Alert, Coordinate, Floor, FloorLayout, RoomEdge, RoomNode, Building
@@ -107,21 +112,6 @@ def create_building(request):
         form = BuildingForm()
 
     return render(request, 'create_building.html', {'form': form})
-
-
-# TODO: outdated, possibly delete
-# def create_rooms(request):
-#     if request.method == 'POST':
-#         form = FloorLayoutForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             form.save()
-#             # Add a success message to the context
-#             context = {'form': form, 'success_message': 'Successfully added!'}
-#             return render(request, 'create_floorlayout.html', context)
-#     else:
-#         form = FloorLayoutForm()
-
-#     return render(request, 'create_rooms.html', {'form': form})
 
 
 def get_floorlayout_image_url(request):
@@ -313,6 +303,13 @@ class FloorLayoutView(generics.ListAPIView):
     serializer_class = FloorLayoutSerializer
 
 
+class AlertView(generics.ListAPIView):
+    queryset = Alert.objects.all()
+    serializer_class = AlertSerializer
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def history_latest_change(request):
     watched_models = [RoomNode, RoomEdge, Building, Floor, FloorLayout]
     results = []
@@ -326,22 +323,53 @@ def history_latest_change(request):
     return JsonResponse({
         'date': str(max(results)),
     })
-    
+
+
+def superuser_required(view_func):
+    """
+    Decorator for views that checks that the user is a superuser,
+    redirecting to the login page if necessary.
+    """
+    def _wrapped_view(request, *args, **kwargs):
+        if not request.user.is_superuser:
+            return redirect(f'{settings.LOGIN_URL}?next={request.path}')
+        return view_func(request, *args, **kwargs)
+    return _wrapped_view
+
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def create_alert(request):
     if Alert.objects.filter(is_active=True).exists():
         return Response({"error": "An active alert already exists."}, status=status.HTTP_400_BAD_REQUEST)
     
     serializer = AlertSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.save()
+        alert = serializer.save()
+        alert.reporter = request.user
+        alert.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_active_alert(request):
+    try:
+        alert = Alert.objects.get(is_active=True)
+    except Alert.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    return _update_alert(request, alert.pk)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
 def update_alert(request, pk):
+    return _update_alert(request, pk)
+
+
+def _update_alert(request, pk):
     try:
         alert = Alert.objects.get(pk=pk)
     except Alert.DoesNotExist:
@@ -361,11 +389,47 @@ def check_active_alert(request):
     return Response({"active_alert": False})
 
 
+@api_view(['GET'])
+def get_active_alert(request):
+    try:
+        active_alert = Alert.objects.get(is_active=True)
+        serializer = AlertCompleteSerializer(active_alert)
+        data = serializer.data
+        data['active_alert'] = True
+        return Response(data)
+    except Alert.DoesNotExist:
+        return Response({'active_alert': False})
+
+
 @api_view(['PUT'])
+@permission_classes([IsAdminUser])
 def turn_off_alert(request):
     if Alert.objects.filter(is_active=True).exists():
         alert = Alert.objects.filter(is_active=True).first()
         alert.is_active = False
+        print(request.user.username, type(request.user))
+        alert.resolver = request.user # for some reason this is an anonymous user
         alert.save()
         return Response({"message": "Alert turned off successfully"})
     return Response({"error": "No active alert found."}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@superuser_required
+def alert_overview(request):
+    building = ChoiceField(choices=Building.objects.all(), required=False)
+    floors = ChoiceField(choices=Floor.objects.all())
+    roomNodes = ChoiceField(choices=RoomNode.objects.all())
+
+    user_info = {
+        'username': request.user.username,
+        'email': request.user.email
+    }
+
+    context = {
+        "buildings": building,
+        "floors": floors,
+        "roomNodes": roomNodes,
+        "user_info": user_info,
+    }
+
+    return render(request, 'alert_overview.html', context=context)

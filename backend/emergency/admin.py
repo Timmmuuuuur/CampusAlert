@@ -7,6 +7,7 @@ from .models import Floor
 from .models import FloorLayout
 from .models import RoomNode
 from .models import RoomEdge
+from .models import Alert
 
 # Register your models here.
 admin.site.register(Report)
@@ -17,3 +18,4 @@ admin.site.register(Floor)
 admin.site.register(FloorLayout)
 admin.site.register(RoomNode)
 admin.site.register(RoomEdge)
+admin.site.register(Alert)
