@@ -1,5 +1,5 @@
-from django.urls import path
-from .views import BuildingView, FloorLayoutView, FloorView, RoomEdgeView, notification_test, create_floor, create_floorlayout, get_floorlayout_image_url, create_rooms, create_building, RoomNodeView, history_latest_change
+from django.urls import include, path
+from .views import *
 
 urlpatterns = [
     path('notificationtest', notification_test, name='notification_test'),
@@ -19,10 +19,16 @@ urlpatterns = [
     path('floor/all', FloorView.as_view(), name='all_floors'),
     path('floorlayout/all', FloorLayoutView.as_view(), name='all_floorlayouts'),
 
-    path('changes/latest', history_latest_change, name='history_latest_change')
+    path('changes/latest', history_latest_change, name='history_latest_change'),
 
-    path('alert/create/', views.create_alert),
-    path('alert/update/<int:pk>/', views.update_alert),
-    path('alert/check/', views.check_active_alert),
-    path('alert/turn-off/', views.turn_off_alert),
+    path('alert/create/', create_alert),
+    path('alert/update/<int:pk>/', update_alert),
+    path('alert/update-active/', update_active_alert),
+    path('alert/check/', check_active_alert),
+    path('alert/turn-off/', turn_off_alert),
+    path('alert/get-active/', get_active_alert),
+
+    path('alert/', alert_overview, name='alert_overview'),
+    
+    path('api-auth/', include('rest_framework.urls')),
 ]

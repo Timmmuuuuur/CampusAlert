@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import Alert, Coordinate, Building, Floor, FloorLayout, RoomNode, RoomEdge
 
@@ -74,7 +75,31 @@ class RoomEdgeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class BasicUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['username', 'email']
+
+
 class AlertSerializer(serializers.ModelSerializer):
+    syncThreat = serializers.CharField(required=False)
+    building = serializers.PrimaryKeyRelatedField(queryset=Building.objects.all(), required=False)
+    floor = serializers.PrimaryKeyRelatedField(queryset=Floor.objects.all(), required=False)
+    roomNode = serializers.PrimaryKeyRelatedField(queryset=RoomNode.objects.all(), required=False)
+
     class Meta:
         model = Alert
-        fields = ['id', 'syncThreat', 'building', 'floor', 'roomNode', 'time', 'is_active']
+        fields = ['id', 'syncThreat', 'building', 'floor', 'roomNode', 'time']
+
+
+class AlertCompleteSerializer(serializers.ModelSerializer):
+    syncThreat = serializers.CharField(required=False)
+    building = BuildingSerializer()
+    floor = FloorSerializer()
+    roomNode = RoomNodeSerializer()
+    reporter = BasicUserSerializer()
+    resolver = BasicUserSerializer()
+
+    class Meta:
+        model = Alert
+        fields = ['id', 'syncThreat', 'building', 'floor', 'roomNode', 'time', 'reporter', 'resolver']

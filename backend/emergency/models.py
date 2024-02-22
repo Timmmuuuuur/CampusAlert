@@ -1,7 +1,7 @@
 from django.db import models
 import numpy as np
 from simple_history.models import HistoricalRecords
-
+from django.contrib.auth.models import User
 
 class Report(models.Model):
     report_number = models.IntegerField(primary_key=True)
@@ -205,12 +205,14 @@ class Alert(models.Model):
         ('storm', 'Storm'),
     ]
 
-    syncThreat = models.CharField(max_length=10, choices=SYNC_THREAT_CHOICES)
-    building = models.ForeignKey(Building, on_delete=models.CASCADE)
-    floor = models.ForeignKey(Floor, on_delete=models.CASCADE)
-    roomNode = models.ForeignKey(RoomNode, on_delete=models.CASCADE)
+    syncThreat = models.CharField(max_length=10, choices=SYNC_THREAT_CHOICES, null=True, default=None)
+    building = models.ForeignKey(Building, on_delete=models.CASCADE, null=True, default=None)
+    floor = models.ForeignKey(Floor, on_delete=models.CASCADE, null=True, default=None)
+    roomNode = models.ForeignKey(RoomNode, on_delete=models.CASCADE, null=True, default=None)
     time = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
+    reporter = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, default=None, related_name='reporter')
+    resolver = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, default=None, related_name='resolver')
 
     def __str__(self):
         return f"{self.syncThreat} Alert at {self.roomNode} - {self.time}"
