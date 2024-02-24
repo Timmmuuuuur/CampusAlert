@@ -9,7 +9,8 @@ urlpatterns = [
     path('floor/create', create_floor, name='create_floor'),
     path('room/create', create_rooms, 
     name='create_rooms'),
-    path('building/create', create_building, name='create_rooms'),
+    path('building/create', create_building, name='create_building'),
+    path('alert/', alert_overview, name='alert_overview'),
 
     # GET endpoints
     path('floorlayout/get_image_url', get_floorlayout_image_url, name='get_floorlayout_image_url'),
@@ -28,7 +29,6 @@ urlpatterns = [
     path('alert/turn-off/', turn_off_alert),
     path('alert/get-active/', get_active_alert),
 
-    path('alert/', alert_overview, name='alert_overview'),
     
     path('api-auth/', include('rest_framework.urls')),
 ]

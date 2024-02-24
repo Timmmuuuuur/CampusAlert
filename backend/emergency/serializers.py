@@ -1,6 +1,14 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from fcm_django.models import FCMDevice
 from .models import Alert, Coordinate, Building, Floor, FloorLayout, RoomNode, RoomEdge
+
+
+class BasicUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['username', 'email']
+
 
 class CoordinateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -75,12 +83,6 @@ class RoomEdgeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class BasicUserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['username', 'email']
-
-
 class AlertSerializer(serializers.ModelSerializer):
     syncThreat = serializers.CharField(required=False)
     building = serializers.PrimaryKeyRelatedField(queryset=Building.objects.all(), required=False)
@@ -103,3 +105,10 @@ class AlertCompleteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Alert
         fields = ['id', 'syncThreat', 'building', 'floor', 'roomNode', 'time', 'reporter', 'resolver']
+
+# class FCMDeviceSerializer(serializers.ModelSerializer):
+#     user = BasicUserSerializer()
+    
+#     class Meta:
+#         model = FCMDevice
+#         fields = ["registration_id"]

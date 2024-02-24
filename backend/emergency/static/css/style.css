@@ -1,0 +1,68 @@
+* {
+    font-family: "Inter", sans-serif;
+}
+
+.active {
+    background-color: red;
+    color: white; /* You can style it as per your preference */
+    font-size: 30pt;
+    font-weight: bolder;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.container {
+    padding: 20px;
+    border-radius: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    margin: 5px;
+}
+
+textarea {
+    border-radius: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.5);
+}
+
+input[type=submit], input[type=file] {
+    font-size: 12pt;
+    margin: 10px 0px 10px 0px;
+    padding: 3px;
+}
+
+span {
+    background-color: rgb(241, 241, 241);
+    color: rgb(50, 50, 50);
+    padding: 0pt 2pt 0pt 2pt;
+    margin: 2pt 0pt 2pt 0pt;
+    border-radius: 2px;
+    border-bottom: 2px solid darkgray;
+}
+
+.top-navbar {
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.top-navbar ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.top-navbar ul li {
+    display: inline;
+    margin-right: 10px;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.top-navbar ul li a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.top-navbar ul li:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}

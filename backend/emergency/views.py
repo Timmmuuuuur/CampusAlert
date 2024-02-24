@@ -1,30 +1,22 @@
 from django.conf import settings
 from django.forms import ChoiceField
+from django.http import JsonResponse
 import numpy as np
-import pandas as pd
-from django.db.models import Q
-from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
-from django.views.decorators.csrf import csrf_exempt
 from fcm_django.models import FCMDevice
 from firebase_admin.messaging import Message, Notification
 from rest_framework import generics
-from rest_framework.parsers import JSONParser
 from rest_framework import status
 from rest_framework.response import Response
 from .serializers import AlertCompleteSerializer, AlertSerializer, RoomNodeSerializer, RoomEdgeSerializer, FloorLayoutSerializer, FloorSerializer, BuildingSerializer
-from django.contrib.auth.decorators import login_required
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
-from django.contrib.auth.decorators import user_passes_test
 
 from .forms import BuildingForm, FloorForm, FloorLayoutForm, UploadRoomCSVForm
 from .models import Alert, Coordinate, Floor, FloorLayout, RoomEdge, RoomNode, Building
 
 
 def call_notification(title, body):
-    print('Button pressed! Python function called.')
     message = Message(
         notification=Notification(title=title, body=body, image="url")
     )
@@ -348,6 +340,7 @@ def create_alert(request):
         alert = serializer.save()
         alert.reporter = request.user
         alert.save()
+        call_notification("EMERGENCY", "THERE IS AN EMERGENCY OCCURING ON CAMPUS. PAY ATTENTION TO YOUR NOTIFICATION AS NEW INFORMATION ARRIVES.")
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -355,8 +348,10 @@ def create_alert(request):
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def update_active_alert(request):
+
     try:
         alert = Alert.objects.get(is_active=True)
+
     except Alert.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     
@@ -374,11 +369,18 @@ def _update_alert(request, pk):
         alert = Alert.objects.get(pk=pk)
     except Alert.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    if (request.user != alert.reporter) and (not request.user.is_superuser):
+        return Response({"error": "You are not permitted to update this alert"}, status=status.HTTP_403_FORBIDDEN)
 
     serializer = AlertSerializer(alert, data=request.data, partial=True)
     if serializer.is_valid():
         serializer.save()
+        alert.refresh_from_db()
+        call_notification("STATUS UPDATE ON CURRENT EMERGENCY", f"{alert}")
+
         return Response(serializer.data)
+
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -410,6 +412,7 @@ def turn_off_alert(request):
         print(request.user.username, type(request.user))
         alert.resolver = request.user # for some reason this is an anonymous user
         alert.save()
+        call_notification("STATUS UPDATE ON CURRENT EMERGENCY", "Alert now turned off. You may resume your regular activities.")
         return Response({"message": "Alert turned off successfully"})
     return Response({"error": "No active alert found."}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -418,7 +421,7 @@ def turn_off_alert(request):
 def alert_overview(request):
     building = ChoiceField(choices=Building.objects.all(), required=False)
     floors = ChoiceField(choices=Floor.objects.all())
-    roomNodes = ChoiceField(choices=RoomNode.objects.all())
+    room_nodes = ChoiceField(choices=RoomNode.objects.all())
 
     user_info = {
         'username': request.user.username,
@@ -428,7 +431,7 @@ def alert_overview(request):
     context = {
         "buildings": building,
         "floors": floors,
-        "roomNodes": roomNodes,
+        "roomNodes": room_nodes,
         "user_info": user_info,
     }
 
