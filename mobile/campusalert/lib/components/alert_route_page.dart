@@ -1,3 +1,4 @@
+import 'package:campusalert/alert/alert.dart';
 import 'package:campusalert/components/image_overlay.dart';
 import 'package:campusalert/components/radio_selection.dart';
 import 'package:campusalert/main.dart';
@@ -6,8 +7,10 @@ import 'package:campusalert/schemas/building.dart';
 import 'package:campusalert/schemas/database.dart';
 import 'package:campusalert/schemas/floor.dart';
 import 'package:campusalert/schemas/roomnode.dart';
+import 'package:campusalert/style/text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:campusalert/api_service.dart';
 
 List<AlertRoutePage> defaultPages() {
   return [
@@ -43,33 +46,36 @@ class AlertRoutePage extends StatelessWidget {
         canPop: canPop,
         child: Scaffold(
           appBar: AppBar(
-            title: Text("REMAIN CALM",
+            title: HighlightedText("REMAIN CALM",
                 style: TextStyle(
                     fontSize: 27,
                     color: Colors.red,
                     fontWeight: FontWeight.w900)),
             automaticallyImplyLeading: false,
           ),
-          body: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(title),
-              form(appState),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: nextButtonEnabledCallback(appState)
-                    ? () async {
-                        if (nextPage == null) {
-                          await onNextPageCallback(appState);
-                          nextPage = appState.alertRoute.next(context);
-                        }
-                      }
-                    : null,
-                child: Text('Next Page'),
+          body: Padding(
+          padding: EdgeInsets.all(10.0), child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  HighlightedText(title),
+                  form(appState),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: nextButtonEnabledCallback(appState)
+                        ? () async {
+                            if (nextPage == null) {
+                              await onNextPageCallback(appState);
+                              nextPage = appState.alertRoute.next(context);
+                            }
+                          }
+                        : null,
+                    child: BodyText('Next Page'),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ));
+            )
+          )
+        );
   }
 }
 
@@ -80,24 +86,27 @@ class ThreatTypePage extends AlertRoutePage {
           canPop: false,
           form: (appState) => Center(
             child: DropdownButton<SyncThreat>(
-              value: appState.selectedSyncThreat,
+              value: appState.activeAlert!.threat,
               onChanged: (SyncThreat? newValue) {
                 if (newValue != null) {
-                  appState.updateSelectedSyncThreat(newValue);
+                  appState.activeAlert!.threat = newValue;
+                  appState.updateAlert(appState.activeAlert!);
                 }
               },
               items: SyncThreat.values
                   .map<DropdownMenuItem<SyncThreat>>((SyncThreat value) {
                 return DropdownMenuItem<SyncThreat>(
                   value: value,
-                  child: Text(value.name),
+                  child: BodyText(value.name),
                 );
               }).toList(),
             ),
           ),
           nextButtonEnabledCallback: (appState) =>
-              (appState.selectedSyncThreat != null),
-          onNextPageCallback: (_) async {},
+              (appState.activeAlert!.threat != null),
+          onNextPageCallback: (appState) async {
+            SyncAlert.updateActive(appState.activeAlert!);
+          },
         );
 }
 
@@ -114,7 +123,7 @@ class BuildingFindingPage extends AlertRoutePage {
                 return CircularProgressIndicator();
               } else if (snapshot.hasError) {
                 // If there's an error
-                return Text('Error: ${snapshot.error}');
+                return BodyText('Error: ${snapshot.error}');
               } else {
                 // Once the future is resolved
                 return Center(
@@ -125,10 +134,11 @@ class BuildingFindingPage extends AlertRoutePage {
                           // TODO: sort this such that the closest buildings are at the top
                           objects: snapshot.data?.toList() ?? [],
                           getSelectedObject: (appState) =>
-                              appState.selectedBuilding,
+                              appState.activeAlert!.building,
                           onItemSelected: (e) {
                             var building = e as Building;
-                            appState.updateSelectedBuilding(building);
+                            appState.activeAlert!.building = building;
+                            appState.updateAlert(appState.activeAlert!);
                           },
                         ))
                   ]),
@@ -137,8 +147,10 @@ class BuildingFindingPage extends AlertRoutePage {
             },
           ),
           nextButtonEnabledCallback: (appState) =>
-              (appState.selectedBuilding != null),
-          onNextPageCallback: (_) async {},
+              (appState.activeAlert!.building != null),
+          onNextPageCallback: (appState) async {
+            SyncAlert.updateActive(appState.activeAlert!);
+          },
         );
 }
 
@@ -149,33 +161,34 @@ class FloorFindingPage extends AlertRoutePage {
           canPop: false,
           form: (appState) {
             return FutureBuilder<Set<Floor>>(
-              future: appState.selectedBuilding == null
+                future: appState.activeAlert!.building == null
                   ? Future.value({})
-                  : appState.selectedBuilding!.allFloors(),
+                  : appState.activeAlert!.building!.allFloors(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   // While the future is loading
                   return CircularProgressIndicator();
                 } else if (snapshot.hasError) {
                   // If there's an error
-                  return Text('Error: ${snapshot.error}');
+                  return BodyText('Error: ${snapshot.error}');
                 } else {
                   // Once the future is resolved
                   return Center(
                       child: Column(
                     children: [
-                      Text(appState.selectedBuilding == null
+                      BodyText(appState.activeAlert!.building == null
                           ? ""
-                          : "ALL FLOORS ARE IN ${appState.selectedBuilding!}."),
+                          : "ALL FLOORS ARE IN ${appState.activeAlert!.building!}."),
                       SizedBox(
                           height: 475,
                           child: RadioSelectionWidget<Floor>(
                             objects: snapshot.data?.toList() ?? [],
                             getSelectedObject: (appState) =>
-                                appState.selectedFloor,
+                                appState.activeAlert!.floor,
                             onItemSelected: (e) {
                               var floor = e as Floor;
-                              appState.updateSelectedFloor(floor);
+                              appState.activeAlert!.floor = floor;
+                              appState.updateAlert(appState.activeAlert!);
                             },
                           )),
                     ],
@@ -185,23 +198,25 @@ class FloorFindingPage extends AlertRoutePage {
             );
           },
           nextButtonEnabledCallback: (appState) =>
-              (appState.selectedFloor != null),
-          onNextPageCallback: (_) async {},
+              (appState.activeAlert!.floor != null),
+          onNextPageCallback: (appState) async {
+            SyncAlert.updateActive(appState.activeAlert!);
+          },
         );
 }
 
 class RoomNodeFindingPage extends AlertRoutePage {
   static List<Point> getSelectedRoomPoint(AppState appState) {
-    if (appState.selectedRoom == null) {
+    if (appState.activeAlert!.roomNode == null) {
       return [];
     }
 
     // if the selected room isn't on the same floor, we don't display it
-    if (appState.selectedRoom!.floorId != appState.selectedFloor!.id) {
+    if (appState.activeAlert!.roomNode!.floorId != appState.activeAlert!.floor!.id) {
       return [];
     }
 
-    return [Point(appState.selectedRoom!.x, appState.selectedRoom!.y)];
+    return [Point(appState.activeAlert!.roomNode!.x, appState.activeAlert!.roomNode!.y)];
   }
 
   RoomNodeFindingPage()
@@ -210,32 +225,33 @@ class RoomNodeFindingPage extends AlertRoutePage {
               "PLEASE INDICATE WHICH ROOM YOU ARE CURRENTLY IN. Tap the room on the map",
           canPop: false,
           form: (appState) => FutureBuilder<String>(
-            future: appState.selectedFloor == null
+            future: appState.activeAlert!.floor == null
                 ? Future.value("")
-                : appState.selectedFloor!.floorLayout
+                : appState.activeAlert!.floor!.floorLayout
                     .then((layout) => layout.layoutImageUrl),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return CircularProgressIndicator(); // Placeholder for loading indicator
               } else if (snapshot.hasError) {
-                return Text('Error: ${snapshot.error}');
+                return BodyText('Error: ${snapshot.error}');
               } else {
                 return Column(children: [
-                  Text(appState.selectedRoom == null
+                  BodyText(appState.activeAlert!.roomNode == null
                       ? ""
-                      : "Selected room: ${appState.selectedRoom!.name}"),
+                      : "Selected room: ${appState.activeAlert!.roomNode!.name}"),
                   ImageWithOverlay(
                     imageUrl: snapshot.data!, // Use snapshot data here
                     points: getSelectedRoomPoint(appState),
                     lines: [],
                     onTapCallback: (Offset o) async {
                       var closestRoomNode =
-                          await appState.selectedFloor!.closestRoomNode(o);
+                          await appState.activeAlert!.floor!.closestRoomNode(o);
 
                       if (closestRoomNode != null) {
-                        appState.updateSelectedRoom((await appState
-                            .selectedFloor!
-                            .closestRoomNode(o))!);
+                        appState.activeAlert!.roomNode = (await appState
+                            .activeAlert!.floor!
+                            .closestRoomNode(o))!;
+                        appState.updateAlert(appState.activeAlert!);
                       }
                     },
                   )
@@ -244,14 +260,14 @@ class RoomNodeFindingPage extends AlertRoutePage {
             },
           ),
           nextButtonEnabledCallback: (appState) =>
-              (appState.selectedRoom != null),
+              (appState.activeAlert!.roomNode != null),
           onNextPageCallback: (appState) async {
+            SyncAlert.updateActive(appState.activeAlert!);
             // If it's a storm, we can't have people going out.
-            if (appState.selectedSyncThreat != SyncThreat.storm) {
-
+            if (appState.activeAlert!.threat != SyncThreat.storm) {
+              appState.alertRoute.extendSome(
+                  await EmergencyRoutePage.generateRoute(appState.activeAlert!.roomNode!));
             }
-            appState.alertRoute.extendSome(
-                await EmergencyRoutePage.generateRoute(appState.selectedRoom!));
           },
         );
 }
@@ -324,22 +340,14 @@ class EmergencyRoutePage extends AlertRoutePage {
                 );
               } else if (snapshot.hasError) {
                 return Center(
-                  child: Text('Error: ${snapshot.error}'),
+                  child: BodyText('Error: ${snapshot.error}'),
                 );
               } else {
                 return ImageWithOverlay(
                   imageUrl: snapshot.data!, // Use snapshot data here
                   points: [],
                   lines: getLines(route),
-                  onTapCallback: (Offset o) async {
-                    var closestRoomNode =
-                        await appState.selectedFloor!.closestRoomNode(o);
-
-                    if (closestRoomNode != null) {
-                      appState.updateSelectedRoom(
-                          (await appState.selectedFloor!.closestRoomNode(o))!);
-                    }
-                  },
+                  onTapCallback: (Offset o) async {},
                 );
               }
             },

@@ -24,6 +24,7 @@ dependencies:
   cached_network_image: ^3.3.0
   latlong2: ^0.9.0
   uuid: ^4.3.2
+  fluttertoast: ^8.2.4
 
 dev_dependencies:
   flutter_test:
@@ -38,7 +39,6 @@ flutter:
   assets:
     - assets/
   fonts:
-    - family: Overpass
+    - family: Inter
       fonts:
-        - asset: assets/fonts/overpass/Overpass-Italic-VariableFont_wght.ttf
-        - asset: assets/fonts/overpass/Overpass-VariableFont_wght.ttf
+        - asset: assets/fonts/inter/Inter-VariableFont_slnt,wght.ttf

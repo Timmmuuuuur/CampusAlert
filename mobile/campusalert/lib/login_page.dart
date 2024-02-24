@@ -1,8 +1,8 @@
+import 'package:campusalert/style/text.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 
-import 'api_service.dart';
 import 'main.dart';
 import 'package:campusalert/auth.dart';
 
@@ -22,7 +22,7 @@ class _LoginPageState extends State<LoginPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Login Page'),
+        title: BodyText('Login Page'),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -58,10 +58,10 @@ class _LoginPageState extends State<LoginPage> {
                     () => Navigator.pushReplacementNamed(context, '/main_app'),
                     appState);
               },
-              child: Text('Login'),
+              child: BodyText('Login'),
             ),
             if (_errorMessage != null)
-              Text(
+              BodyText(
                 _errorMessage!,
                 style: TextStyle(
                   color: Colors.red,
