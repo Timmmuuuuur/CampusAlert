@@ -45,16 +45,17 @@ class AlertRoutePage extends StatelessWidget {
     return PopScope(
         canPop: canPop,
         child: Scaffold(
-          appBar: AppBar(
-            title: HighlightedText("REMAIN CALM",
-                style: TextStyle(
-                    fontSize: 27,
-                    color: Colors.red,
-                    fontWeight: FontWeight.w900)),
-            automaticallyImplyLeading: false,
-          ),
-          body: Padding(
-          padding: EdgeInsets.all(10.0), child: Column(
+            appBar: AppBar(
+              title: HighlightedText("REMAIN CALM",
+                  style: TextStyle(
+                      fontSize: 27,
+                      color: Colors.red,
+                      fontWeight: FontWeight.w900)),
+              automaticallyImplyLeading: false,
+            ),
+            body: Padding(
+              padding: EdgeInsets.all(10.0),
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   HighlightedText(title),
@@ -73,9 +74,7 @@ class AlertRoutePage extends StatelessWidget {
                   ),
                 ],
               ),
-            )
-          )
-        );
+            )));
   }
 }
 
@@ -161,7 +160,7 @@ class FloorFindingPage extends AlertRoutePage {
           canPop: false,
           form: (appState) {
             return FutureBuilder<Set<Floor>>(
-                future: appState.activeAlert!.building == null
+              future: appState.activeAlert!.building == null
                   ? Future.value({})
                   : appState.activeAlert!.building!.allFloors(),
               builder: (context, snapshot) {
@@ -212,11 +211,15 @@ class RoomNodeFindingPage extends AlertRoutePage {
     }
 
     // if the selected room isn't on the same floor, we don't display it
-    if (appState.activeAlert!.roomNode!.floorId != appState.activeAlert!.floor!.id) {
+    if (appState.activeAlert!.roomNode!.floorId !=
+        appState.activeAlert!.floor!.id) {
       return [];
     }
 
-    return [Point(appState.activeAlert!.roomNode!.x, appState.activeAlert!.roomNode!.y)];
+    return [
+      Point(
+          appState.activeAlert!.roomNode!.x, appState.activeAlert!.roomNode!.y)
+    ];
   }
 
   RoomNodeFindingPage()
@@ -266,7 +269,8 @@ class RoomNodeFindingPage extends AlertRoutePage {
             // If it's a storm, we can't have people going out.
             if (appState.activeAlert!.threat != SyncThreat.storm) {
               appState.alertRoute.extendSome(
-                  await EmergencyRoutePage.generateRoute(appState.activeAlert!.roomNode!));
+                  await EmergencyRoutePage.generateRoute(
+                      appState.activeAlert!.roomNode!));
             }
           },
         );
@@ -300,8 +304,10 @@ class EmergencyRoutePage extends AlertRoutePage {
       currentFloorRoute.add(n);
     }
 
-    pages.add(
-        EmergencyRoutePage(floor: currentFloor!, route: currentFloorRoute));
+    if (currentFloor != null) {
+      pages.add(
+        EmergencyRoutePage(floor: currentFloor, route: currentFloorRoute));
+    }
 
     for (var i in pages) {
       print(i.floor);
