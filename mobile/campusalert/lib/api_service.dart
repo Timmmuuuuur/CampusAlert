@@ -1,7 +1,5 @@
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import 'dart:io';
 import 'package:jwt_decoder/jwt_decoder.dart';
 
 import 'package:campusalert/auth.dart';
@@ -10,6 +8,12 @@ import 'package:campusalert/local_store.dart';
 class APIService {
   // TODO: Development URL. Change this to production later.
   static final String baseURL = "10.0.2.2:8080";
+
+  static Future<http.Response> put(
+      String path, Map<String, String> headers, String body) {
+    var url = Uri.http(baseURL, path);
+    return http.put(url, headers: headers, body: body);
+  }
 
   static Future<http.Response> post(
       String path, Map<String, String> headers, String body) {
@@ -37,6 +41,22 @@ class APIService {
         .body);
   }
 
+  static Future<Map<String, dynamic>> putCommon(
+      String path, Map<String, dynamic> body) async {
+    return json.decode(
+        (await put(path, await getCommonHeaders(), jsonEncode(body))).body);
+  }
+
+  static String formEncode(Map<String, dynamic> m) {
+    return m.keys.reduce((a, b) => "$a&$b=${m[b]}");
+  }
+
+  static Future<Map<String, dynamic>> putCommonForm(
+      String path, Map<String, dynamic> body) async {
+    return json.decode(
+        (await put(path, await getCommonHeaders(), formEncode(body))).body);
+  }
+
   // post and get format in JSON and with authentication token
   static Future<Map<String, dynamic>> postCommon(
       String path, Map<String, dynamic> body) async {
@@ -49,7 +69,7 @@ class APIService {
     return json.decode((await get(path, await getCommonHeaders())).body);
   }
 
-    static Future<Map<String, dynamic>> getCommonWithUri(Uri uri) async {
+  static Future<Map<String, dynamic>> getCommonWithUri(Uri uri) async {
     return json.decode((await getByUri(uri, await getCommonHeaders())).body);
   }
 

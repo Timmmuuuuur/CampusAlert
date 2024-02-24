@@ -1,16 +1,8 @@
-import 'dart:io';
-
 import 'package:campusalert/account_page.dart';
 import 'package:campusalert/alert/alert.dart';
 import 'package:campusalert/alert/alert_route.dart';
-import 'package:campusalert/alert/threat.dart';
-import 'package:campusalert/api_service.dart';
-import 'package:campusalert/building_prompt_page.dart';
-import 'package:campusalert/components/image_overlay.dart';
-import 'package:campusalert/schemas/building.dart';
 import 'package:campusalert/schemas/database.dart';
-import 'package:campusalert/schemas/floor.dart';
-import 'package:campusalert/schemas/roomnode.dart';
+import 'package:campusalert/style/text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -26,6 +18,7 @@ import 'package:campusalert/auth.dart';
 import 'package:campusalert/schemas/schema.dart';
 
 import 'package:drift_db_viewer/drift_db_viewer.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 Future<void> main() async {
   // Flutter setup
@@ -52,6 +45,8 @@ Future<void> main() async {
     fcmToken: await tokenFromMessaging(messaging),
     messageStreamController: BehaviorSubject<RemoteMessage>(),
   );
+
+  AppContext.staticFcmToken = await tokenFromMessaging(messaging);
 
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     print('Handling a foreground message: ${message.messageId}');
@@ -85,7 +80,7 @@ Future<String?> tokenFromMessaging(FirebaseMessaging messaging) async {
   return token;
 }
 
-Future<bool> _autoLogin() async {
+Future<bool> _autoLogin(BuildContext context) async {
   // Attempt to automatically log in using past stored user session. If the user is logged out, nothing happens and false is returned
   // This is called when the app first land on the login screen
   try {
@@ -111,6 +106,8 @@ class AppContext {
   final String? fcmToken;
   final BehaviorSubject messageStreamController;
 
+  static String? staticFcmToken;
+
   const AppContext({
     required this.messaging,
     required this.setting,
@@ -135,14 +132,14 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<bool>(
-      future: _autoLogin(),
+      future: _autoLogin(context),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           // While the future is still running, return a loading indicator
           return CircularProgressIndicator();
         } else if (snapshot.hasError) {
           // Handle errors here, e.g., display an error message
-          return Text('Error: ${snapshot.error}');
+          return BodyText('Error: ${snapshot.error}');
         } else {
           // Data has been successfully fetched, display it
           bool autoLoginSuccess = snapshot.data!;
@@ -187,6 +184,8 @@ class AppState extends ChangeNotifier {
   AppState({required this.appContext}) {
     appContext.messageStreamController
         .listen((message) => onNewMessage(message));
+    
+    updateAlertPresent();
   }
 
   // emergency information
@@ -195,10 +194,10 @@ class AppState extends ChangeNotifier {
   AlertRoute alertRoute = AlertRoute();
 
   // For each new field to keep track of, we need to add more stuff to clearEmergency()
-  SyncThreat? selectedSyncThreat;
-  Building? selectedBuilding;
-  Floor? selectedFloor;
-  RoomNode? selectedRoom;
+  SyncAlert? activeAlert;
+
+  // for the non-reporters
+  bool alertPresent = false;
 
   var selectedPageIndex = 0;
 
@@ -209,42 +208,47 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void onNewMessage(message) {
+  Future<void> onNewMessage(message) async {
+    String toastMessage;
     if (message.notification != null) {
-      lastMessage = 'Received a notification message:'
-          '\nTitle=${message.notification?.title},'
-          '\nBody=${message.notification?.body},'
-          '\nData=${message.data}';
+      toastMessage = 'UPDATE: ${message.notification?.body}';
     } else {
-      lastMessage = 'Received a data message: ${message.data}';
+      toastMessage = 'Received a data message: ${message.data}';
     }
+
+    // Show the toast message
+    Fluttertoast.showToast(
+      msg: toastMessage,
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.SNACKBAR,
+      timeInSecForIosWeb: 3,
+      backgroundColor: Colors.black87,
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
+
+    await updateAlertPresent();
     notifyListeners();
   }
 
-  void clearEmergency() {
-    selectedSyncThreat = null;
-    selectedBuilding = null;
-    selectedFloor = null;
-    selectedRoom = null;
-  }
+  Future<void> updateAlertPresent() async {
+    var alert = await SyncAlert.getActive();
+    alertPresent = (alert != null) ? true : false;
+    if (alert != null) {
+      lastMessage =
+          "${alert.threat?.name ?? 'unknown threat'} in ${alert.building?.name ?? 'unknown building'}, ${alert.floor?.name ?? 'unknown floor'}, ${alert.roomNode?.name ?? 'unknown room'}.";
+    }
 
-  void updateSelectedSyncThreat(SyncThreat newVal) {
-    selectedSyncThreat = newVal;
     notifyListeners();
   }
 
-  void updateSelectedBuilding(Building newVal) {
-    selectedBuilding = newVal;
-    notifyListeners();
+  void newEmergency() {
+    activeAlert = SyncAlert(id: -1);
+    SyncAlert.createActive();
   }
 
-  void updateSelectedFloor(Floor newVal) {
-    selectedFloor = newVal;
-    notifyListeners();
-  }
-
-  void updateSelectedRoom(RoomNode newVal) {
-    selectedRoom = newVal;
+  void updateAlert(SyncAlert newVal) {
+    activeAlert = newVal;
     notifyListeners();
   }
 }
@@ -253,17 +257,7 @@ class NavigationRoot extends StatelessWidget {
   static List<Widget> _pages = <Widget>[
     EmergencyAlertPage(),
     DriftDbViewer(localDatabase!),
-    Column(children: [
-      Text(
-          "Follow the red line to get to the exit. The line may leads you to another floor. Press Next when that occurs.",
-          style: TextStyle(
-              fontSize: 27, color: Colors.red, fontWeight: FontWeight.w900)),
-      ImageWithOverlay(
-          imageUrl:
-              "http://10.0.2.2:8080/media/layout_images/layout_hAL2RG8.png",
-          points: [Point(20, 20)],
-          lines: [Line(Point(0, 0), Point(685, 323))])
-    ]),
+    Column(children: [BodyText("Empty tab")]),
     AccountPage(),
   ];
 

@@ -1,10 +1,9 @@
 import 'package:campusalert/floor_prompt_page.dart';
+import 'package:campusalert/style/text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'main.dart';
-import 'components/drag_activation.dart';
-import 'api_service.dart';
 import 'package:http/http.dart' as http;
 
 
@@ -20,18 +19,17 @@ class _BuildingPromptPageState extends State<BuildingPromptPage> {
 
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<AppState>();
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('BUILDING PROMPT PAGE'),
+        title: BodyText('BUILDING PROMPT PAGE'),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text('WHAT BUILDING ARE YOU IN? PLEASE ENTER BUILDING IN ALPHANUMERIC CHARACTERS WITH NO SPACES',
+            BodyText('WHAT BUILDING ARE YOU IN? PLEASE ENTER BUILDING IN ALPHANUMERIC CHARACTERS WITH NO SPACES',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 27,
@@ -57,7 +55,7 @@ class _BuildingPromptPageState extends State<BuildingPromptPage> {
                   MaterialPageRoute(builder: (context) => FloorPromptPage()),
                 );
               },
-              child: Text('ENTER BUILDING'),
+              child: BodyText('ENTER BUILDING'),
             ),
           ],
         ),
@@ -111,7 +109,7 @@ void sendMessage(String message) async {
 
 //     return Column(
 //       children: [
-//         Text('WHAT BUILDING ARE YOU IN? PLEASE ENTER BUILDING IN ALPHANUMERIC CHARACTERS WITH NO SPACES',
+//         BodyText('WHAT BUILDING ARE YOU IN? PLEASE ENTER BUILDING IN ALPHANUMERIC CHARACTERS WITH NO SPACES',
 //             textAlign: TextAlign.center,
 //             style: TextStyle(
 //               fontSize: 30,
@@ -136,7 +134,7 @@ void sendMessage(String message) async {
 //               MaterialPageRoute(builder: (context) => FloorPromptPage()),
 //             );
 //           },
-//           child: Text('Go to Floor Prompt Page'),
+//           child: BodyText('Go to Floor Prompt Page'),
 //         ),
 //         // TextFormField(
 //         //   decoration: InputDecoration(
@@ -153,19 +151,19 @@ void sendMessage(String message) async {
 //         // SizedBox(height: 16.0),
 //         // ElevatedButton(
 //         //   onPressed: _submitForm,
-//         //   child: Text('Submit'),
+//         //   child: BodyText('Submit'),
 //         // ),
 //         // SizedBox(height: 16.0),
-//         // Text('Entered Text: $_enteredText'),
+//         // BodyText('Entered Text: $_enteredText'),
 //       // ),
-//         // Text(appState.appContext.fcmToken ?? "[No token]"),
-//         // Text(appState.lastMessage),
+//         // BodyText(appState.appContext.fcmToken ?? "[No token]"),
+//         // BodyText(appState.lastMessage),
 //         // DragActivationComponent(
 //         //   onActivate: () {
 //         //     print("Swipping done!");
 //         //   },
 //         // ),
-//         // Text(
+//         // BodyText(
 //         //     'Swiping the above switch will activate the alarm campus-wide.\nONLY USE THIS IF ANYONE MAY BE IN IMMEDIATE/POTENTIAL DANGER.\nKNOWINGLY ACTIVATING A FALSE ALARM WILL RESULT IN DISCIPLINARY ACTIONS.',
 //         //     textAlign: TextAlign.center,
 //         //     style: TextStyle(
@@ -185,6 +183,6 @@ class TestCountDisplayer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(count.toString());
+    return BodyText(count.toString());
   }
 }

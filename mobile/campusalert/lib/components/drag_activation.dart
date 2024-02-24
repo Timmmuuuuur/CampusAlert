@@ -1,3 +1,4 @@
+import 'package:campusalert/style/text.dart';
 import 'package:flutter/material.dart';
 
 class DragActivationComponent extends StatefulWidget {
@@ -30,7 +31,7 @@ class _DragActivationComponentState extends State<DragActivationComponent> {
           return GestureDetector(
               onHorizontalDragUpdate: (DragUpdateDetails details) {
                 setState(() {
-                  _dragProgress = details.localPosition.dx;
+                  _dragProgress = details.localPosition.dx - (constraints.maxHeight / 2);
                   _willActivate = details.localPosition.dx >=
                       constraints.maxWidth - constraints.maxHeight;
                   _isDragging = true;
@@ -48,26 +49,35 @@ class _DragActivationComponentState extends State<DragActivationComponent> {
                 });
               },
               child: Container(
-                  color: _willActivate ? Colors.green : Colors.red,
                   width: constraints.maxWidth,
                   height: constraints.maxHeight,
+                  decoration: BoxDecoration(
+                    color: _willActivate ? Colors.green : Colors.red,
+                    borderRadius: BorderRadius.circular(constraints.maxHeight / 2),
+                    shape: BoxShape.rectangle,
+                  ),
                   child: Stack(children: [
                     Positioned(
                         left: constraints.maxHeight + 20,
+                        top: (constraints.maxHeight / 2 - 20),
                         child: Text(
                           _isDragging
                               ? 'Keep dragging'
-                              : 'Drag from left to right to activate alarm',
-                          style: TextStyle(fontSize: 20),
+                              : 'Drag to activate alarm',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 25,
+                            fontWeight: FontWeight.w800,
+                          )
                         )),
                     Positioned(
-                        bottom: 0,
-                        left: _dragProgress,
+                        bottom: 5,
+                        left: _dragProgress + 5,
                         child: Container(
-                          width: constraints.maxHeight,
-                          height: constraints.maxHeight,
+                          width: constraints.maxHeight - 10,
+                          height: constraints.maxHeight - 10,
                           decoration: BoxDecoration(
-                            color: Colors.green, // border color
+                            color: Color.fromARGB(223, 255, 255, 255), // border color
                             shape: BoxShape.circle,
                           ),
                         ))

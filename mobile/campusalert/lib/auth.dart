@@ -1,7 +1,6 @@
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:campusalert/main.dart';
 import 'package:campusalert/local_store.dart';
 import 'package:campusalert/api_service.dart';
-import 'dart:io';
 
 class Credential {
   final User user;
@@ -51,6 +50,13 @@ class Credential {
     });
 
     String? token = response["token"];
+
+    // associate the user with the current device
+    if (AppContext.staticFcmToken != null) {
+      APIService.postCommon("auth/add-fcm/", {
+        'token': AppContext.staticFcmToken,
+      });
+    }
 
     if (token == null) {
       valid = false;
