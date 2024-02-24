@@ -5,12 +5,20 @@
 <head>
     <title>Upload Building</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+
 </head>
 <body>
+    {% include 'top_navbar.html' %}
+
     <h1>Upload Building</h1>
 
     <p>Building consists of a list of floors with unique floor numbers. There is no notion of where the building is located, as all geographic information are stored by individual rooms.</p>
-
+    
     <ul>
         <li>The name must be unique and be no longer than 255 characters.</li>
     </ul>

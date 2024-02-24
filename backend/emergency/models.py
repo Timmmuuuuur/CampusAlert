@@ -215,4 +215,4 @@ class Alert(models.Model):
     resolver = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, default=None, related_name='resolver')
 
     def __str__(self):
-        return f"{self.syncThreat} Alert at {self.roomNode} - {self.time}"
+        return f"{self.syncThreat if self.syncThreat else 'unknown threat'} at {self.building if self.building else 'unknown building'}, {self.floor if self.floor else 'unknown floor'}, {self.roomNode if self.roomNode else 'unknown room'} on {self.time}"

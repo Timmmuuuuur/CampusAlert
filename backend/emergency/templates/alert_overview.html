@@ -5,48 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alert System</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
 </head>
 <body>
-
+    {% include 'top_navbar.html' %}
 <p id="alert-status">No active alerts</p>
 
 <button id="turn-off-alert" style="display: none;">Turn off Alert</button>
 
-<hr>
-<h1>DANGER ZONE: THE BELOW FORM WILL SET OFF AN ALARM CAMPUS-WIDE!</h1>
+<div class="container">
+    <h1>DANGER ZONE</h1>
+    <p><b>THE FOLLOWING FORM CAN ACTIVATE ALERT CAMPUS-WIDE!</b></p>
 
-<button id="turn-on-alert" style="display: none;">Turn on Alert</button>
+    <button id="turn-on-alert" style="display: none;">Turn on Alert</button>
 
-<form id="alert-form" style="display: none;">
-    <label for="syncThreat">Sync Threat:</label>
-    <select id="syncThreat" name="syncThreat">
-        <option value="fire">Fire</option>
-        <option value="attacker">Attacker</option>
-        <option value="storm">Storm</option>
-    </select><br>
-    <label for="building">Building:</label>
-    <select id="building" name="building">
-        <option value="">---</option>
-        {% for b in buildings.choices %}
-            <option value="{{ b.id }}">{{ b }}</option>
-        {% endfor %}
-    </select><br>
-    <label for="floor">Floor:</label>
-    <select id="floor" name="floor">
-        <option value="">---</option>
-        {% for b in floors.choices %}
-            <option value="{{ b.id }}">{{ b }}</option>
-        {% endfor %}
-    </select><br>
-    <label for="room-node">Room Node:</label>
-    <select id="roomNode" name="roomNode">
-        <option value="">---</option>
-        {% for b in roomNodes.choices %}
-            <option value="{{ b.id }}">{{ b }}</option>
-        {% endfor %}
-    </select><br>
-    <button type="submit">Submit</button>
-</form>
+    <form id="alert-form" style="display: none;">
+        <label for="syncThreat">Sync Threat:</label>
+        <select id="syncThreat" name="syncThreat">
+            <option value="fire">Fire</option>
+            <option value="attacker">Attacker</option>
+            <option value="storm">Storm</option>
+        </select><br>
+        <label for="building">Building:</label>
+        <select id="building" name="building">
+            <option value="">---</option>
+            {% for b in buildings.choices %}
+                <option value="{{ b.id }}">{{ b }}</option>
+            {% endfor %}
+        </select><br>
+        <label for="floor">Floor:</label>
+        <select id="floor" name="floor">
+            <option value="">---</option>
+            {% for b in floors.choices %}
+                <option value="{{ b.id }}">{{ b }}</option>
+            {% endfor %}
+        </select><br>
+        <label for="room-node">Room Node:</label>
+        <select id="roomNode" name="roomNode">
+            <option value="">---</option>
+            {% for b in roomNodes.choices %}
+                <option value="{{ b.id }}">{{ b }}</option>
+            {% endfor %}
+        </select><br>
+        <button type="submit">Submit</button>
+    </form>
+    </div>
 
 <script>
 $(document).ready(function() {
@@ -76,7 +84,7 @@ $(document).ready(function() {
             + ", " 
             + (alertData.floor ? alertData.floor.name : "Unknown floor") 
             + ", " 
-            + (alertData.roomNode ? alertData.roomNode : "Unknown room")
+            + (alertData.roomNode ? alertData.roomNode.name : "Unknown room")
             + ".\nReported by "
             + (alertData.reporter ? alertData.reporter.username : "an unknown reporter")
             + " on "
@@ -208,21 +216,9 @@ $(document).ready(function() {
     checkActiveAlert();
 
     // Periodically check for active alert status
-    setInterval(checkActiveAlert, 5000); // Check every 5 seconds
+    setInterval(checkActiveAlert, 500); // Check every 5 seconds
 });
 </script>
-<style>
-    * {
-        font-family: sans-serif;
-    }
-
-    .active {
-        background-color: red;
-        color: white; /* You can style it as per your preference */
-        font-size: 30pt;
-        font-weight: bolder;
-    }
-</style>
 
 </body>
 </html>

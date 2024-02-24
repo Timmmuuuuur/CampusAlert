@@ -7,6 +7,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from django.contrib.auth.models import User
+from fcm_django.models import FCMDevice
+
+from .serializers import FCMDeviceSerializer
 
 
 class ObtainAuthToken(ObtainJSONWebToken):
@@ -40,3 +43,21 @@ def whoami(request):
         'username': user.username,
         'email': user.email
     })
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def add_firebase_device(request):
+
+    user = request.user
+
+    print(request.body.decode('utf-8'))
+    print(request.data.get('token')) # This prints None
+
+    device = FCMDevice.objects.filter(user=user).first()
+    if device is None:
+        device = FCMDevice.objects.create(user=user, active=True, registration_id=request.data.get('token'))
+
+    device.registration_id = request.data.get('token')
+    device.save()
+
+    return Response(FCMDeviceSerializer(device).data, status=status.HTTP_201_CREATED)
