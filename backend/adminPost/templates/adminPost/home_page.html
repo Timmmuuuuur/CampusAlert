@@ -21,7 +21,24 @@
                 {% if post.photo %}
                     <img src="{{ post.photo.url }}" alt="{{ post.title }} Photo" class="post-image">
                 {% endif %}
+                <div>
+                    {% if post.building %}
+                    Building: {{ post.building }}<br>
+                    {% endif %}
+                    {% if post.floor %}
+                    Floor: {{ post.floor }}<br>
+                    {% endif %}
+                    {% if post.crime %}
+                    Crime: {{ post.crime }}<br>
+                    {% endif %}
+
+
+
+
+        
+                </div>
             </div>
+
         {% endfor %}
     </div>
 {% endblock %}

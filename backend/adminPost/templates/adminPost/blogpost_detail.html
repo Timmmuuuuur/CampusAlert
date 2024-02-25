@@ -10,6 +10,15 @@
     {% if post.photo %}
         <img src="{{ post.photo.url }}" alt="{{ post.title }} Photo">
     {% endif %}
+    {% if post.building %}
+    Building: {{ post.building }}<br>
+    {% endif %}
+    {% if post.room %}
+        Room: {{ post.floor }}<br>
+    {% endif %}
+    {% if post.crime %}
+        Crime: {{ post.crime }}<br>
+    {% endif %}
     
     <!-- Include any other details you want to display -->
 {% endblock %}
