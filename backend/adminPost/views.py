@@ -13,8 +13,33 @@ from django.urls import reverse_lazy
 import requests
 from django.http import JsonResponse
 
+
 from emergency.models import Building, RoomNode, Floor, Crime, Report
 
+# API for flutter, enable user filter admin post based on optional criteria 
+def api_post_list(request=None): # request=None : optional argument for criteria filter
+    # Get query parameters from the request
+    building_id = request.GET.get('building')
+    floor_id = request.GET.get('floor')
+    crime_id = request.GET.get('crime')
+    report_id = request.GET.get('report')
+
+    # Filter posts based on the query parameters
+    posts = BlogPost.objects.all()
+
+    if building_id:
+        posts = posts.filter(building_id=building_id)
+    if floor_id:
+        posts = posts.filter(floor_id=floor_id)
+    if crime_id:
+        posts = posts.filter(crime_id=crime_id)
+    if report_id:
+        posts = posts.filter(report_id=report_id)
+
+    # Serialize queryset into JSON data
+    data = [{'title': post.title, 'content': post.content} for post in posts]
+
+    return JsonResponse(data, safe=False)
 
 class BlogPostForm_emergency(forms.ModelForm): #for linking emergency database, used in adminPost as 
     # optional field
