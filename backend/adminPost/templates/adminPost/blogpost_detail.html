@@ -1,0 +1,24 @@
+<!-- templates/adminPost/blogpost_detail.html -->
+{% extends 'adminPost_base.html' %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+    <h2>{{ post.title }}</h2>
+    <p>{{ post.content }}</p>
+    
+    {% if post.photo %}
+        <img src="{{ post.photo.url }}" alt="{{ post.title }} Photo">
+    {% endif %}
+    {% if post.building %}
+    Building: {{ post.building }}<br>
+    {% endif %}
+    {% if post.room %}
+        Room: {{ post.floor }}<br>
+    {% endif %}
+    {% if post.crime %}
+        Crime: {{ post.crime }}<br>
+    {% endif %}
+    
+    <!-- Include any other details you want to display -->
+{% endblock %}

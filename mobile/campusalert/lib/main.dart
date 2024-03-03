@@ -3,13 +3,14 @@ import 'package:campusalert/alert/alert.dart';
 import 'package:campusalert/alert/alert_route.dart';
 import 'package:campusalert/schemas/database.dart';
 import 'package:campusalert/style/text.dart';
+import 'package:drift/src/runtime/api/runtime_api.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-
+import 'local_store.dart' as local_store;
 import 'package:rxdart/rxdart.dart';
 
 import 'login_page.dart';
@@ -19,6 +20,7 @@ import 'package:campusalert/schemas/schema.dart';
 
 import 'package:drift_db_viewer/drift_db_viewer.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:campusalert/AdminPost.dart';
 
 Future<void> main() async {
   // Flutter setup
@@ -129,6 +131,14 @@ class App extends StatelessWidget {
     }
   }
 
+
+
+
+
+
+
+
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<bool>(
@@ -177,6 +187,8 @@ class App extends StatelessWidget {
     );
   }
 }
+
+
 
 class AppState extends ChangeNotifier {
   final AppContext appContext;
@@ -259,7 +271,9 @@ class NavigationRoot extends StatelessWidget {
     DriftDbViewer(localDatabase!),
     Column(children: [BodyText("Empty tab")]),
     AccountPage(),
+    AdminPost(),
   ];
+
 
   @override
   Widget build(BuildContext context) {
@@ -287,6 +301,10 @@ class NavigationRoot extends StatelessWidget {
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outlined),
             label: 'ACCOUNT',
+          ),
+            BottomNavigationBarItem(
+            icon: Icon(Icons.library_books_outlined),
+            label: 'BlOG',
           ),
         ],
       ),

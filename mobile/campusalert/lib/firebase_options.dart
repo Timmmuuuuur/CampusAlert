@@ -79,4 +79,14 @@ class DefaultFirebaseOptions {
     iosClientId: '1093945962106-mpr91a8s0b5gjjgmqr3lsfbnqd50b8ne.apps.googleusercontent.com',
     iosBundleId: 'com.example.campusalert.RunnerTests',
   );
+
+  static const FirebaseOptions adminPost = FirebaseOptions( //has photo, allow user content filtering, 
+  // latency ++ when scale up and more crtieria to filter, thus use individual database
+  apiKey: "AIzaSyB9LMeCggalTofCZ15yhkiMmHZIQyK_478",
+  authDomain: "campusalert-ece498.firebaseapp.com",
+  projectId: "campusalert-ece498",
+  storageBucket: "campusalert-ece498.appspot.com",
+  messagingSenderId: "1093945962106",
+  appId: "1:1093945962106:web:e089ba7eba5d7ae05555c3"
+  );
 }
