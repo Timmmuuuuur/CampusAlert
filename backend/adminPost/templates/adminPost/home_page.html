@@ -1,0 +1,44 @@
+{% extends 'adminPost_base.html' %}
+
+{% load static %} 
+
+{% block title %}Admin Post Home Page{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" type="text/css" href="{% static 'adminPost/css/style.css' %}">
+
+   <!--  <h2>Welcome to the Admin Post Home Page</h2> -->
+    <div class="post-container">
+        {% for post in posts %}
+            <div class="post">
+                <div class="post-header">
+                    <a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a>
+                    <p>Posted on: {{ post.pub_date }}</p>
+                </div>
+                <div class="post-content">
+                    <p>{{ post.content }}</p>
+                </div>
+                {% if post.photo %}
+                    <img src="{{ post.photo.url }}" alt="{{ post.title }} Photo" class="post-image">
+                {% endif %}
+                <div>
+                    {% if post.building %}
+                    Building: {{ post.building }}<br>
+                    {% endif %}
+                    {% if post.floor %}
+                    Floor: {{ post.floor }}<br>
+                    {% endif %}
+                    {% if post.crime %}
+                    Crime: {{ post.crime }}<br>
+                    {% endif %}
+
+
+
+
+        
+                </div>
+            </div>
+
+        {% endfor %}
+    </div>
+{% endblock %}
