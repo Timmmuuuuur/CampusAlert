@@ -1,0 +1,34 @@
+<!-- your_app/templates/base.html -->
+{% load static %} 
+<link rel="stylesheet" type="text/css" href="{% static 'adminPost/css/style.css' %}">
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <!--  <title>{% block title %}Default Title{% endblock %}</title> -->
+
+</head>
+<body>
+    <!-- 
+    <div id="header">
+       <h1>CampusAlert Poster</h1> -->
+        <nav>
+            <ul>
+                <li><a href="{% url 'home' %}">Home</a></li>
+                <!-- Add more navigation links as needed -->
+            </ul>
+        </nav>
+    </div>
+     <!-- 
+    <div id="content">
+        {% block content %}{% endblock %}
+    </div>
+    -->
+
+    <div id="footer">
+        <p>&copy; 2024 CampusAlert. All rights reserved.</p>
+    </div>
+</body>
+</html>

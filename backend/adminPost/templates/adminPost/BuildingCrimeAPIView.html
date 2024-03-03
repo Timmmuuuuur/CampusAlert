@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Building Crime Report</title>
+</head>
+<body>
+    <h1>Building Crime Report</h1>
+
+    {% if building_crime_counts %}
+        <ul>
+            {% for building_crime in building_crime_counts %}
+                <li>
+                    <strong>{{ building_crime.building_name }}</strong>: {{ building_crime.crime_count_30_days }} crimes in the past 30 days
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No building crime data available.</p>
+    {% endif %}
+</body>
+</html>

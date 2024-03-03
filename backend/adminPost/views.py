@@ -1,6 +1,9 @@
 from django.shortcuts import render
-
+from rest_framework.views import APIView
 from django import forms
+from rest_framework.response import Response
+from django.utils import timezone
+from datetime import timedelta
 # Create your views here.
 # adminPost/views.py
 from django.shortcuts import render
@@ -9,35 +12,48 @@ from .models import BlogPost
 from .forms import BlogPostForm # user submit post, criteria form
 from django.views.generic import TemplateView
 from django.urls import reverse_lazy
+from rest_framework import serializers
+from django.views.generic.edit import UpdateView
+from django.shortcuts import get_object_or_404
+from django.shortcuts import redirect
+from operator import itemgetter
+from .serializers import BuildingCrimeSerializer  # Import your serializer
 
 import requests
 from django.http import JsonResponse
 
-
 from emergency.models import Building, RoomNode, Floor, Crime, Report
 
 
-def api_post_list(request):
-    if request.method == 'POST':
-        # Extract text data
-        title = request.POST.get('title')
-        content = request.POST.get('content')
+def delete_post(request, pk):
+    # Retrieve the post object or return a 404 error if not found
+    post = get_object_or_404(BlogPost, pk=pk)
+    
+    # Delete the post
+    post.delete()
+    
+    # Redirect to the admin post home page
+    return redirect('adminPost_home')
+
+class BuildingCrimeAPIView(APIView):
+    def get(self, request):
+        # Calculate the date 30 days ago
+        thirty_days_ago = timezone.now() - timedelta(days=30)
         
-        # Extract image data
-        photo = request.FILES.get('photo')
-
-        # Save the image to the server or process it as needed
-        if photo:
-            # Process the image file
-            # Save the image to the server or perform other operations
-            pass
-
-        # Process other data as needed
-        # Return a JSON response
-        return JsonResponse({'status': 'success'})
-    else:
-        # Handle other HTTP methods (GET, PUT, DELETE, etc.)
-        pass
+        # Retrieve the crime count for each building within the past 30 days
+        building_crime_counts = []
+        buildings = Building.objects.all()
+        for building in buildings:
+            crime_count = BlogPost.objects.filter(building=building, crime__isnull=False, pub_date__gte=thirty_days_ago).count()
+            building_crime_counts.append({
+                'building_name': building.name,
+                'crime_count_30_days': crime_count
+            })
+        
+        # Sort the building crime counts based on the crime count in descending order
+        sorted_building_crime_counts = sorted(building_crime_counts, key=itemgetter('crime_count_30_days'), reverse=True)
+        
+        return Response(BuildingCrimeSerializer(sorted_building_crime_counts, many=True).data)
 
 
 
@@ -46,7 +62,7 @@ def api_post_list(request=None):
     # Check if request is None (no criteria provided)
     if request is None:
         # If no request is provided, return all posts without filtering
-        posts = BlogPost.objects.all()
+        posts = BlogPost.objects.all().order_by('-pub_date')  # Order by publication date descending
     else:
         # Get query parameters from the request
         building_id = request.GET.get('building')
@@ -55,7 +71,7 @@ def api_post_list(request=None):
         report_id = request.GET.get('report')
 
         # Start with all posts
-        posts = BlogPost.objects.all()
+        posts = BlogPost.objects.all().order_by('-pub_date')
 
         # Filter posts based on the query parameters if they are provided
         if building_id:
@@ -69,10 +85,14 @@ def api_post_list(request=None):
 
     # Serialize queryset into JSON data
     data = []
+
     for post in posts:
         post_data = {
             'title': post.title,
             'content': post.content,
+            'building': post.building.name if post.building else None,
+            'crime': post.crime.kind if post.crime else None,
+            'pub_date': post.pub_date if post.pub_date else None,
             'photo_url': post.photo.url if post.photo else None  # Get the photo URL if available
         }
         data.append(post_data)
@@ -92,7 +112,11 @@ class BlogPostForm_emergency(forms.ModelForm): #for linking emergency database, 
     crime = forms.ModelChoiceField(queryset=Crime.objects.all(), empty_label="Select Crime", required=False)
     report = forms.ModelChoiceField(queryset=Report.objects.all(), empty_label="Select Report", required=False)
 
-
+class EditPostView(UpdateView):
+    model = BlogPost
+    fields = ['title', 'content', 'building', 'floor', 'crime', 'report', 'photo']  # Fields to be edited
+    template_name = 'adminPost/edit_post.html'  # Template for editing the post
+    success_url = '/adminPost/adminPost_home/'   # URL to redirect to after successful editing
 
 class AdminPostHomePageView(ListView):
     model = BlogPost

@@ -1,0 +1,74 @@
+/* adminPost/css/style.css */
+/* Style for the current photo */
+.current-photo {
+    max-width: calc(100% - 40px); /* Set the maximum width to 100% minus the horizontal padding */
+    height: auto; /* Maintain aspect ratio */
+    margin-bottom: 20px; /* Add margin at the bottom for spacing */
+}
+  
+  /* Style for the uploaded photo input */
+  #id_photo {
+    max-width: 100%; /* Set the maximum width to prevent the input field from exceeding its container */
+  }
+/* Style for the form container */
+.form-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Style for form input fields */
+  .form-container input[type="text"],
+  .form-container textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  
+  /* Style for form label */
+  .form-container label {
+    font-weight: bold;
+  }
+  
+  /* Style for photo preview */
+  .current-photo {
+    max-width: 100%;
+    margin-bottom: 20px;
+  }
+  
+  /* Style for submit button */
+  .form-container button[type="submit"] {
+    background-color: #4caf50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .form-container button[type="submit"]:hover {
+    background-color: #45a049;
+  }
+  
+  /* Style for file input */
+  .form-container input[type="file"] {
+    margin-top: 10px;
+  }
+  
+  /* Style for file input label */
+  .form-container input[type="file"] + label {
+    display: block;
+    margin-top: 10px;
+  }
+  
+  /* Style for error messages */
+  .error-message {
+    color: red;
+  }
+  
