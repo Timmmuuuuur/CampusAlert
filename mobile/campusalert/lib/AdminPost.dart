@@ -9,6 +9,8 @@ class AdminPost extends StatefulWidget {
 
 class _AdminPostState extends State<AdminPost> {
   List<dynamic> posts = []; // List to store the fetched posts
+  List<String> filterCriteria = []; // List to store filter criteria options
+  List<String> selectedCriteria = []; // Selected filter criteria
 
   // Base URL of your Django backend
   final String baseUrl = 'http://10.31.18.0:8080'; // Adjust the IP address and port as necessary
@@ -51,6 +53,7 @@ class _AdminPostState extends State<AdminPost> {
               if (post['pub_date'] != null)
                 Text('Posted on: ${post['pub_date']}'),
               if (post['content'] != null) Text(post['content']),
+              if (post['crime'] != null) Text(post['crime']),
               if (post['photo_url'] != null)
                 Image.network(
                   '$baseUrl${post['photo_url']}', // Include the base URL
