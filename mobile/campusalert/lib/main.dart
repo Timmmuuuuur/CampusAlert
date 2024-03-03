@@ -3,15 +3,14 @@ import 'package:campusalert/alert/alert.dart';
 import 'package:campusalert/alert/alert_route.dart';
 import 'package:campusalert/schemas/database.dart';
 import 'package:campusalert/style/text.dart';
-import 'package:drift/src/runtime/api/runtime_api.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'local_store.dart' as local_store;
 import 'package:rxdart/rxdart.dart';
+import 'package:campusalert/CrimeHeatMap.dart';
 
 import 'login_page.dart';
 import 'emergency_alert_page.dart';
@@ -102,6 +101,7 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print('Message notification: ${message.notification?.body}');
 }
 
+
 class AppContext {
   final FirebaseMessaging messaging;
   final NotificationSettings setting;
@@ -130,10 +130,6 @@ class App extends StatelessWidget {
       print('User declined or has not yet granted permission');
     }
   }
-
-
-
-
 
 
 
@@ -187,6 +183,9 @@ class App extends StatelessWidget {
     );
   }
 }
+
+
+
 
 
 
@@ -302,12 +301,14 @@ class NavigationRoot extends StatelessWidget {
             icon: Icon(Icons.person_outlined),
             label: 'ACCOUNT',
           ),
-            BottomNavigationBarItem(
+           BottomNavigationBarItem(
             icon: Icon(Icons.library_books_outlined),
-            label: 'BlOG',
+            label: 'BLOG',
           ),
         ],
       ),
+
     );
   }
 }
+

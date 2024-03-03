@@ -7,7 +7,7 @@ import 'package:campusalert/local_store.dart';
 
 class APIService {
   // TODO: Development URL. Change this to production later.
-  static final String baseURL = "10.0.2.2:8080";
+  static const String baseURL = "10.0.2.2:8080";
 
   static Future<http.Response> put(
       String path, Map<String, String> headers, String body) {
