@@ -1,10 +1,10 @@
 import 'package:campusalert/auth.dart';
-import 'package:campusalert/building_prompt_page.dart';
+import 'package:campusalert/schemas/schema.dart';
+import 'package:campusalert/style/text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'main.dart';
-import 'drag_activation.dart';
 
 class AccountPage extends StatelessWidget {
   const AccountPage({
@@ -14,9 +14,47 @@ class AccountPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<AppState>();
+    var fcmTokenString = appState.appContext.fcmToken ?? "[No token]";
+    var schemaFetcher = context.watch<SchemaFetcher>();
 
-    return Column(
-      children: [SizedBox(height: 30.0), LogoutButton()],
+    return Padding(
+      padding: EdgeInsets.all(10.0),
+      child: Column(
+        children: [
+          SizedBox(height: 30),
+          LogoutButton(),
+          SizedBox(height: 10),
+          ElevatedButton(
+            onPressed: () => schemaFetcher.checkForUpdateAndUpdate(),
+            child: BodyText('Update database'),
+          ),
+          SizedBox(height: 30),
+          Container(
+            padding: EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.grey[200], // Light gray color
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "FCM Token",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold, // Make "FCM Token" bold
+                  ),
+                ),
+                Text(
+                  fcmTokenString,
+                  style: TextStyle(
+                    fontWeight: FontWeight.normal, // Make FCM token bold
+                  ),
+                ),
+              ],
+            ),
+          )
+        ],
+      )
     );
   }
 }
@@ -29,7 +67,7 @@ class LogoutButton extends StatelessWidget {
         // Handle button press here
         _onPressed(context);
       },
-      child: Text('Log out'),
+      child: BodyText('Log out'),
     );
   }
 
@@ -37,7 +75,7 @@ class LogoutButton extends StatelessWidget {
     // Display a message when the button is pressed
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Logging out'),
+        content: BodyText('Logging out'),
       ),
     );
 

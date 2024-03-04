@@ -5,8 +5,15 @@
 <head>
     <title>Upload Rooms via .csv</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+
 </head>
 <body>
+    {% include 'top_navbar.html' %}
     <h1>Upload Rooms via .csv files</h1>
 
     <p>To create the .csv files, use the CampusAlert Graphmaker application for desktop platforms. Follow the following steps:</p>
@@ -15,7 +22,7 @@
         <li>Create a new project by creating a folder with the same name as the floor whose room layout you are trying to create</li>
         <li>Insert the layout of the floor as <code>layout.png</code> within the floor folder</li>
         <li>Open the CampusAlert Graphmaker application, click Load, and choose the aforementioned folder</li>
-        <li>Use shift-left click to create a new room node. Use right click to connect two nodes</li>
+        <li>Use <span>Shift</span>-<span>Left click</span> to create a new room node. Use right click to connect two nodes</li>
         <li>Press save when completed</li>
         <li>Go into the project folder. You should see <code>edges.csv</code> and <code>nodes.csv</code>. Upload them to this form</li>
     </ol>

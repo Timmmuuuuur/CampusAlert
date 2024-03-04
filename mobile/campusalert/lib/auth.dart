@@ -1,7 +1,6 @@
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:campusalert/main.dart';
 import 'package:campusalert/local_store.dart';
 import 'package:campusalert/api_service.dart';
-import 'dart:io';
 
 class Credential {
   final User user;
@@ -13,21 +12,16 @@ class Credential {
   static final SPStringPair _usernameStore = SPStringPair('username');
   static final SPStringPair _passwordStore = SPStringPair('password');
 
-  static Future<Credential> getLastCredential() async {
-    // Get the last user's credential that was logged in if it did
-    // Throws LastCredentialMissingException if the credential is missing
-    // TODO: make it so that the top level can catch the exception and kick user back to login page if that happens
+static Future<Credential> getLastCredential() async {
+  String? username = await _usernameStore.get();
+  String? password = await _passwordStore.get();
 
-    String? username = await _usernameStore.get();
-    String? password = await _passwordStore.get();
+  // Provide default values if username or password is null
+  username ??= '';
+  password ??= '';
 
-    if (username != null && password != null) {
-      return Credential(user: User(username: username), password: password);
-    }
-
-    throw LastCredentialMissingException(
-        "There isn't a last credential stored! The user is either logged out or the application is in an invalid state.");
-  }
+  return Credential(user: User(username: username), password: password);
+}
 
   Future<void> store() async {
     if (!(valid ?? false)) {
@@ -51,6 +45,13 @@ class Credential {
     });
 
     String? token = response["token"];
+
+    // associate the user with the current device
+    if (AppContext.staticFcmToken != null) {
+      APIService.postCommon("auth/add-fcm/", {
+        'token': AppContext.staticFcmToken,
+      });
+    }
 
     if (token == null) {
       valid = false;

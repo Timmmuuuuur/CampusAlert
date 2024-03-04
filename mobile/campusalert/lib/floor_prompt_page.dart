@@ -1,10 +1,6 @@
 
+import 'package:campusalert/style/text.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:campusalert/emergency_alert_page.dart';
-
-import 'main.dart';
-import 'drag_activation.dart';
 
 class FloorPromptPage extends StatefulWidget {
   @override
@@ -17,18 +13,17 @@ class _FloorPromptPageState extends State<FloorPromptPage> {
 
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<AppState>();
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('BUILDING PROMPT PAGE'),
+        title: BodyText('BUILDING PROMPT PAGE'),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text('WHAT FLOOR ARE YOU ON? PLEASE ENTER FLOOR NUMBER WITHOUT ANY SPACES:',
+            BodyText('WHAT FLOOR ARE YOU ON? PLEASE ENTER FLOOR NUMBER WITHOUT ANY SPACES:',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 27,
@@ -51,7 +46,7 @@ class _FloorPromptPageState extends State<FloorPromptPage> {
 
                 Navigator.pushReplacementNamed(context, '/main_app');
               },
-              child: Text('ENTER FLOOR'),
+              child: BodyText('ENTER FLOOR'),
             ),
           ],
         ),
@@ -84,7 +79,7 @@ class _FloorPromptPageState extends State<FloorPromptPage> {
 
 //     return Column(
 //       children: [
-//         Text('WHAT FLOOR ARE YOU ON? PLEASE ENTER FLOOR NUMBER:',
+//         BodyText('WHAT FLOOR ARE YOU ON? PLEASE ENTER FLOOR NUMBER:',
 //             textAlign: TextAlign.center,
 //             style: TextStyle(
 //               fontSize: 30,
@@ -99,14 +94,14 @@ class _FloorPromptPageState extends State<FloorPromptPage> {
 //               MaterialPageRoute(builder: (context) => FloorPromptPage()),
 //             );
 //           },
-//           child: Text('Go to Floor Prompt Page'),
+//           child: BodyText('Go to Floor Prompt Page'),
 //         ),
 //         ElevatedButton(
 //           onPressed: () {
 //             // Navigate to the SecondPage when the button is pressed
 //             Navigator.pushReplacementNamed(context, '/main_app');
 //           },
-//           child: Text('Go to EMERGENCY ALERT Page'),
+//           child: BodyText('Go to EMERGENCY ALERT Page'),
 //         ),
 //         // TextFormField(
 //         //   decoration: InputDecoration(
@@ -123,19 +118,19 @@ class _FloorPromptPageState extends State<FloorPromptPage> {
 //         // SizedBox(height: 16.0),
 //         // ElevatedButton(
 //         //   onPressed: _submitForm,
-//         //   child: Text('Submit'),
+//         //   child: BodyText('Submit'),
 //         // ),
 //         // SizedBox(height: 16.0),
-//         // Text('Entered Text: $_enteredText'),
+//         // BodyText('Entered Text: $_enteredText'),
 //       // ),
-//         // Text(appState.appContext.fcmToken ?? "[No token]"),
-//         // Text(appState.lastMessage),
+//         // BodyText(appState.appContext.fcmToken ?? "[No token]"),
+//         // BodyText(appState.lastMessage),
 //         // DragActivationComponent(
 //         //   onActivate: () {
 //         //     print("Swipping done!");
 //         //   },
 //         // ),
-//         // Text(
+//         // BodyText(
 //         //     'Swiping the above switch will activate the alarm campus-wide.\nONLY USE THIS IF ANYONE MAY BE IN IMMEDIATE/POTENTIAL DANGER.\nKNOWINGLY ACTIVATING A FALSE ALARM WILL RESULT IN DISCIPLINARY ACTIONS.',
 //         //     textAlign: TextAlign.center,
 //         //     style: TextStyle(
@@ -155,6 +150,6 @@ class TestCountDisplayer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(count.toString());
+    return BodyText(count.toString());
   }
 }

@@ -5,6 +5,7 @@ import 'package:campusalert/schemas/floor.dart';
 import 'package:campusalert/schemas/floorlayout.dart';
 import 'package:campusalert/schemas/roomedge.dart';
 import 'package:campusalert/schemas/roomnode.dart';
+import 'package:campusalert/services/room_graph.dart';
 import 'package:drift/drift.dart';
 // WARNING: Do NOT import flutter packages in here, or else database.g.dart will
 // break due to Table name conflict
@@ -70,6 +71,9 @@ class LocalDatabase extends _$LocalDatabase {
       }
     }
   }
+
+  Future<List<FloorLayout>> get allFloorLayouts =>
+      select(floorLayoutTable).get();
 }
 
 LazyDatabase _openConnection() {
@@ -84,8 +88,13 @@ LazyDatabase _openConnection() {
 }
 
 LocalDatabase? localDatabase;
+RoomGraph? router;
 
 Future<void> initializeDatabase() async {
   // WidgetsFlutterBinding.ensureInitialized();
   localDatabase = LocalDatabase();
+  RoomNode.removeAllMemoization();
+  Floor.removeAllMemoization();
+  Building.removeAllMemoization(); // NOTE: Only static fields are removed!
+  router = await RoomGraph.create();
 }

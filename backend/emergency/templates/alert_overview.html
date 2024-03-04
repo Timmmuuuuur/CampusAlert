@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alert System</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    {% include 'top_navbar.html' %}
+<p id="alert-status">No active alerts</p>
+
+<button id="turn-off-alert" style="display: none;">Turn off Alert</button>
+
+<div class="container">
+    <h1>DANGER ZONE</h1>
+    <p><b>THE FOLLOWING FORM CAN ACTIVATE ALERT CAMPUS-WIDE!</b></p>
+
+    <button id="turn-on-alert" style="display: none;">Turn on Alert</button>
+
+    <form id="alert-form" style="display: none;">
+        <label for="syncThreat">Sync Threat:</label>
+        <select id="syncThreat" name="syncThreat">
+            <option value="fire">Fire</option>
+            <option value="attacker">Attacker</option>
+            <option value="storm">Storm</option>
+        </select><br>
+        <label for="building">Building:</label>
+        <select id="building" name="building">
+            <option value="">---</option>
+            {% for b in buildings.choices %}
+                <option value="{{ b.id }}">{{ b }}</option>
+            {% endfor %}
+        </select><br>
+        <label for="floor">Floor:</label>
+        <select id="floor" name="floor">
+            <option value="">---</option>
+            {% for b in floors.choices %}
+                <option value="{{ b.id }}">{{ b }}</option>
+            {% endfor %}
+        </select><br>
+        <label for="room-node">Room Node:</label>
+        <select id="roomNode" name="roomNode">
+            <option value="">---</option>
+            {% for b in roomNodes.choices %}
+                <option value="{{ b.id }}">{{ b }}</option>
+            {% endfor %}
+        </select><br>
+        <button type="submit">Submit</button>
+    </form>
+    </div>
+
+<script>
+$(document).ready(function() {
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                // Check if the cookie name matches the csrf token
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    // Function to update the alert status
+    function updateAlertStatus(alertData) {
+        console.log(alertData);
+        if (alertData.active_alert) {
+            $("#alert-status").text("ACTIVE ALERT: " 
+            + (alertData.syncThreat ? alertData.syncThreat : "Unknown threat") 
+            + " at " 
+            + (alertData.building ? alertData.building.name : "Unknown building") 
+            + ", " 
+            + (alertData.floor ? alertData.floor.name : "Unknown floor") 
+            + ", " 
+            + (alertData.roomNode ? alertData.roomNode.name : "Unknown room")
+            + ".\nReported by "
+            + (alertData.reporter ? alertData.reporter.username : "an unknown reporter")
+            + " on "
+            + (alertData.time));
+
+            $("#alert-status").addClass("active");
+            $("#turn-off-alert").show();
+            $("#turn-on-alert").hide();
+            $("#alert-form").show();
+        } else {
+            $("#alert-status").text("No active alerts");
+            $("#alert-status").removeClass("active");
+            $("#turn-off-alert").hide();
+            $("#turn-on-alert").show();
+            $("#alert-form").hide();
+        }
+    }
+
+    function getFormData($form){
+        var unindexed_array = $form.serializeArray();
+        var indexed_array = {};
+
+        $.map(unindexed_array, function(n, i){
+            indexed_array[n['name']] = n['value'];
+        });
+
+        return indexed_array;
+    }
+
+    // Function to handle form submission
+    $("#alert-form").submit(function(event) {
+        event.preventDefault();
+        var formData = getFormData($(this));
+
+        var json = {
+            "syncThreat": formData["syncThreat"],
+        };
+
+        if (formData["building"] !== "") {
+            json["building"] = formData["building"]
+        }
+
+        if (formData["floor"] !== "") {
+            json["floor"] = formData["floor"]
+        }
+
+        if (formData["roomNode"] !== "") {
+            json["roomNode"] = formData["roomNode"]
+        }
+
+        $.ajax({
+            type: "PUT",
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken")  // Include the CSRF token from the cookie
+            },
+            url: "update-active/",
+            data: json,
+            success: function(data) {
+                $.ajax({
+                    type: "GET",
+                    url: "get-active/",
+                    data: json,
+                    success: function(data) {
+                        updateAlertStatus(data);
+                    },
+                    error: function(xhr, textStatus, errorThrown) {
+                        console.log("Error:", errorThrown);
+                    }
+                });
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                console.log("Error:", errorThrown);
+            }
+        });
+    });
+
+    // Function to handle turning off alert
+    $("#turn-off-alert").click(function() {
+        $.ajax({
+            type: "PUT",
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken")  // Include the CSRF token from the cookie
+            },
+            url: "turn-off/",
+            success: function(data) {
+                updateAlertStatus({active_alert: false});
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                console.log("Error:", errorThrown);
+            }
+        });
+    });
+
+    $("#turn-on-alert").click(function() {
+        $.ajax({
+            type: "POST",
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken")  // Include the CSRF token from the cookie
+            },
+            data: {},
+            url: "create/",
+            success: function(data) {
+                updateAlertStatus({active_alert: true});
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                console.log("Error:", errorThrown);
+            }
+        });
+    });
+
+    // Function to check active alert status periodically
+    function checkActiveAlert() {
+        $.ajax({
+            type: "GET",
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken")  // Include the CSRF token from the cookie
+            },
+            url: "get-active/",
+            success: function(data) {
+                updateAlertStatus(data);
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                console.log("Error:", errorThrown);
+            }
+        });
+    }
+
+    // Initial check for active alert status
+    checkActiveAlert();
+
+    // Periodically check for active alert status
+    setInterval(checkActiveAlert, 500); // Check every 5 seconds
+});
+</script>
+
+</body>
+</html>

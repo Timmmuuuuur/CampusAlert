@@ -5,8 +5,17 @@
 <head>
     <title>Upload Floor Layout</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+
 </head>
 <body>
+
+    {% include 'top_navbar.html' %}
+
     <h1>Upload Floor Layout</h1>
 
     <form id="form" method="post" enctype="multipart/form-data">

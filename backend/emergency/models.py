@@ -1,7 +1,7 @@
 from django.db import models
 import numpy as np
 from simple_history.models import HistoricalRecords
-
+from django.contrib.auth.models import User
 
 class Report(models.Model):
     report_number = models.IntegerField(primary_key=True)
@@ -196,3 +196,23 @@ class RoomEdge(models.Model):
 
     def __str__(self):
         return '→'.join([str(n) for n in self.nodes.all()])
+
+
+class Alert(models.Model):
+    SYNC_THREAT_CHOICES = [
+        ('fire', 'Fire'),
+        ('attacker', 'Attacker'),
+        ('storm', 'Storm'),
+    ]
+
+    syncThreat = models.CharField(max_length=10, choices=SYNC_THREAT_CHOICES, null=True, default=None)
+    building = models.ForeignKey(Building, on_delete=models.CASCADE, null=True, default=None)
+    floor = models.ForeignKey(Floor, on_delete=models.CASCADE, null=True, default=None)
+    roomNode = models.ForeignKey(RoomNode, on_delete=models.CASCADE, null=True, default=None)
+    time = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+    reporter = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, default=None, related_name='reporter')
+    resolver = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, default=None, related_name='resolver')
+
+    def __str__(self):
+        return f"{self.syncThreat if self.syncThreat else 'unknown threat'} at {self.building if self.building else 'unknown building'}, {self.floor if self.floor else 'unknown floor'}, {self.roomNode if self.roomNode else 'unknown room'} on {self.time}"
