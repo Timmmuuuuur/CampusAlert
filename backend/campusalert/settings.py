@@ -60,8 +60,8 @@ INSTALLED_APPS = [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
-        #'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
-        'rest_framework_simplejwt.authentication.JWTAuthentication', 
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        #'rest_framework_simplejwt.authentication.JWTAuthentication', 
         # Other authentication classes if any
     ],
     
