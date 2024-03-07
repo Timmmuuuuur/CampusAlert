@@ -1,4 +1,5 @@
-import 'package:campusalert/main.dart';
+
+giimport 'package:campusalert/main.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -8,11 +9,11 @@ class RadioSelectionWidget<T> extends StatelessWidget {
   final T? Function(AppState) getSelectedObject;
 
   const RadioSelectionWidget({
-    Key? key,
+    super.key,
     required this.objects,
     required this.getSelectedObject,
     this.onItemSelected,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

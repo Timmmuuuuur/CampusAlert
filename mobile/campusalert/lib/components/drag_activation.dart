@@ -1,4 +1,3 @@
-import 'package:campusalert/style/text.dart';
 import 'package:flutter/material.dart';
 
 class DragActivationComponent extends StatefulWidget {

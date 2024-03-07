@@ -12,16 +12,21 @@ class Credential {
   static final SPStringPair _usernameStore = SPStringPair('username');
   static final SPStringPair _passwordStore = SPStringPair('password');
 
-static Future<Credential> getLastCredential() async {
-  String? username = await _usernameStore.get();
-  String? password = await _passwordStore.get();
+  static Future<Credential> getLastCredential() async {
+    // Get the last user's credential that was logged in if it did
+    // Throws LastCredentialMissingException if the credential is missing
+    // TODO: make it so that the top level can catch the exception and kick user back to login page if that happens
 
-  // Provide default values if username or password is null
-  username ??= '';
-  password ??= '';
+    String? username = await _usernameStore.get();
+    String? password = await _passwordStore.get();
 
-  return Credential(user: User(username: username), password: password);
-}
+    if (username != null && password != null) {
+      return Credential(user: User(username: username), password: password);
+    }
+
+    throw LastCredentialMissingException(
+        "There isn't a last credential stored! The user is either logged out or the application is in an invalid state.");
+  }
 
   Future<void> store() async {
     if (!(valid ?? false)) {

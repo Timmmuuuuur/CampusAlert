@@ -10,7 +10,6 @@ import 'package:campusalert/schemas/roomnode.dart';
 import 'package:campusalert/style/text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:campusalert/api_service.dart';
 
 List<AlertRoutePage> defaultPages() {
   return [
@@ -109,10 +108,41 @@ class ThreatTypePage extends AlertRoutePage {
         );
 }
 
+// class BuildingFindingPage extends AlertRoutePage {
+//   BuildingFindingPage()
+//       : super(
+//           title: "WHERE U AT?",
+//           canPop: false,
+//           form: (appState) => Center(
+//             child: DropdownButton<SyncThreat>(
+//               value: appState.activeAlert!.threat,
+//               onChanged: (SyncThreat? newValue) {
+//                 if (newValue != null) {
+//                   appState.activeAlert!.threat = newValue;
+//                   appState.updateAlert(appState.activeAlert!);
+//                 }
+//               },
+//               items: SyncThreat.values
+//                   .map<DropdownMenuItem<SyncThreat>>((SyncThreat value) {
+//                 return DropdownMenuItem<SyncThreat>(
+//                   value: value,
+//                   child: BodyText(value.name),
+//                 );
+//               }).toList(),
+//             ),
+//           ),
+//           nextButtonEnabledCallback: (appState) =>
+//               (appState.activeAlert!.threat != null),
+//           onNextPageCallback: (appState) async {
+//             SyncAlert.updateActive(appState.activeAlert!);
+//           },
+//         );
+// }
+
 class BuildingFindingPage extends AlertRoutePage {
   BuildingFindingPage()
       : super(
-          title: "PLEASE INDICATE WHICH BUILDING THE THREAT OCCURED IN.",
+          title: "PLEASE INDICATE WHICH BUILDING THE THREAT OCCURRED IN.",
           canPop: false,
           form: (appState) => FutureBuilder<Set<Building>>(
             future: Building.all(),
@@ -125,33 +155,79 @@ class BuildingFindingPage extends AlertRoutePage {
                 return BodyText('Error: ${snapshot.error}');
               } else {
                 // Once the future is resolved
-                return Center(
-                  child: Column(children: [
-                    SizedBox(
-                        height: 475,
+                return SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        // Remove the fixed height or adjust it according to your UI requirements
+                        // height: 475,
                         child: RadioSelectionWidget<Building>(
                           // TODO: sort this such that the closest buildings are at the top
                           objects: snapshot.data?.toList() ?? [],
-                          getSelectedObject: (appState) =>
-                              appState.activeAlert!.building,
+                          getSelectedObject: (appState) => appState.activeAlert!.building,
                           onItemSelected: (e) {
                             var building = e as Building;
                             appState.activeAlert!.building = building;
                             appState.updateAlert(appState.activeAlert!);
                           },
-                        ))
-                  ]),
+                        ),
+                      ),
+                    ],
+                  ),
                 );
               }
             },
           ),
-          nextButtonEnabledCallback: (appState) =>
-              (appState.activeAlert!.building != null),
+          nextButtonEnabledCallback: (appState) => true, // Always enable the NEXT PAGE button
           onNextPageCallback: (appState) async {
             SyncAlert.updateActive(appState.activeAlert!);
           },
         );
 }
+
+// class BuildingFindingPage extends AlertRoutePage {
+//   BuildingFindingPage()
+//       : super(
+//           title: "PLEASE INDICATE WHICH BUILDING THE THREAT OCCURED IN.",
+//           canPop: false,
+//           form: (appState) => FutureBuilder<Set<Building>>(
+//             future: Building.all(),
+//             builder: (context, snapshot) {
+//               if (snapshot.connectionState == ConnectionState.waiting) {
+//                 // While the future is loading
+//                 return CircularProgressIndicator();
+//               } else if (snapshot.hasError) {
+//                 // If there's an error
+//                 return BodyText('Error: ${snapshot.error}');
+//               } else {
+//                 // Once the future is resolved
+//                 return Center(
+//                   child: Column(children: [
+//                     SizedBox(
+//                         height: 475,
+//                         child: RadioSelectionWidget<Building>(
+//                           // TODO: sort this such that the closest buildings are at the top
+//                           objects: snapshot.data?.toList() ?? [],
+//                           getSelectedObject: (appState) =>
+//                               appState.activeAlert!.building,
+//                           onItemSelected: (e) {
+//                             var building = e as Building;
+//                             appState.activeAlert!.building = building;
+//                             appState.updateAlert(appState.activeAlert!);
+//                           },
+//                         ))
+//                   ]),
+//                 );
+//               }
+//             },
+//           ),
+//           nextButtonEnabledCallback: (appState) =>
+//               (appState.activeAlert!.building != null),
+//           onNextPageCallback: (appState) async {
+//             SyncAlert.updateActive(appState.activeAlert!);
+//           },
+//         );
+// }
 
 class FloorFindingPage extends AlertRoutePage {
   FloorFindingPage()
@@ -179,7 +255,7 @@ class FloorFindingPage extends AlertRoutePage {
                           ? ""
                           : "ALL FLOORS ARE IN ${appState.activeAlert!.building!}."),
                       SizedBox(
-                          height: 475,
+      
                           child: RadioSelectionWidget<Floor>(
                             objects: snapshot.data?.toList() ?? [],
                             getSelectedObject: (appState) =>

@@ -1,12 +1,10 @@
 import 'package:campusalert/components/alert_route_page.dart';
-import 'package:campusalert/schemas/schema.dart';
 import 'package:campusalert/style/text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'main.dart';
 import 'components/drag_activation.dart';
-import 'style/text.dart';
 
 class EmergencyAlertPage extends StatelessWidget {
   const EmergencyAlertPage({

@@ -1,7 +1,3 @@
-import 'package:campusalert/api_service.dart';
-import 'package:campusalert/schemas/database.dart';
-import 'package:campusalert/schemas/schema.dart';
-import 'package:drift/drift.dart';
 import 'package:latlong2/latlong.dart';
 
 class Coordinate {

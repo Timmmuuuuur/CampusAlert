@@ -2,6 +2,7 @@ import 'package:campusalert/CrimeHeatMap.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:campusalert/api_config.dart';
 
 class AdminPost extends StatefulWidget {
   @override
@@ -14,7 +15,7 @@ class _AdminPostState extends State<AdminPost> {
   List<String> selectedCriteria = []; // Selected filter criteria
 
   // Base URL of your Django backend
-  final String baseUrl = 'http://10.31.18.0:8080'; // Adjust the IP address and port as necessary
+  final String baseUrl = ApiConfig.baseUrl;  // Adjust the IP address and port as necessary
 
 
   @override
@@ -24,11 +25,18 @@ class _AdminPostState extends State<AdminPost> {
   }
 
   Future<void> fetchPosts() async {
-    final response = await http.get(Uri.parse('$baseUrl/adminPost/api/posts/'));
+  const String baseUrl = ApiConfig.baseUrl; // Assuming cc.apiBaseUrl is a valid base URL
+
+  // Construct the complete URL
+  const String url = '$baseUrl/adminPost/api/posts/';
+
+  // Make the HTTP GET request
+  final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       setState(() {
         posts = json.decode(response.body); // Parse the response JSON
       });
+      
     } else {
       throw Exception('Failed to load posts');
     }

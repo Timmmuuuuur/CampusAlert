@@ -1,6 +1,5 @@
 import 'package:campusalert/schemas/building.dart';
 import 'package:campusalert/schemas/schema.dart';
-import 'package:campusalert/schemas/coordinate.dart';
 import 'package:campusalert/schemas/floor.dart';
 import 'package:campusalert/schemas/floorlayout.dart';
 import 'package:campusalert/schemas/roomedge.dart';
