@@ -36,7 +36,6 @@ class _AdminPostState extends State<AdminPost> {
       setState(() {
         posts = json.decode(response.body); // Parse the response JSON
       });
-      
     } else {
       throw Exception('Failed to load posts');
     }

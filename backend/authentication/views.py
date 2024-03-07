@@ -8,6 +8,8 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from django.contrib.auth.models import User
 from fcm_django.models import FCMDevice
+from rest_framework_jwt.views import VerifyJSONWebToken #due to jwt simple on macos
+
 
 from .serializers import FCMDeviceSerializer
 

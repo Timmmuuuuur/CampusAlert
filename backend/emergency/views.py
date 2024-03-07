@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from .serializers import AlertCompleteSerializer, AlertSerializer, RoomNodeSerializer, RoomEdgeSerializer, FloorLayoutSerializer, FloorSerializer, BuildingSerializer
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
+import pandas as pd
 
 from .forms import BuildingForm, FloorForm, FloorLayoutForm, UploadRoomCSVForm
 from .models import Alert, Coordinate, Floor, FloorLayout, RoomEdge, RoomNode, Building
@@ -139,6 +140,7 @@ def parse_csv(form, name):
         # Attempt to read and parse CSV files
         return pd.read_csv(form.cleaned_data[name])
     except Exception as e:
+        print(e)
         form.add_error(name, f'This is not a valid .csv')
         raise Exception("An error has occured.")
 

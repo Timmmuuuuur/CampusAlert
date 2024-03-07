@@ -101,7 +101,7 @@ class ImageWithOverlayState extends State<ImageWithOverlay> {
         .resolve(ImageConfiguration())
         .addListener(ImageStreamListener((info, _) {
       // Store image width and height
-      _imageWidth = info.image.width.toDouble();
+      _imageWidth = info!.image.width.toDouble();
       _imageHeight = info.image.height.toDouble();
       completer.complete();
     }));

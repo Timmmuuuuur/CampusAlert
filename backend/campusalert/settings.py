@@ -12,12 +12,11 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
-
-# flutter base address, to see actual, go to CampusAlert/mobile/campusalert/lib/config.dart
-FLUTTER_SERVER_ADDRESS = '10.0.2.2:8080'
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -29,6 +28,7 @@ SECRET_KEY = "django-insecure-b415^1au71&_p4(a57i^94f*)6&p7x%7a%wh9myl0q5utr%58d
 DEBUG = True
 
 ALLOWED_HOSTS = [
+    '10.31.18.0'
     '10.0.2.2', # Android localhost
     'localhost',
     '127.0.0.1',
@@ -51,21 +51,17 @@ INSTALLED_APPS = [
     "debug_toolbar",
     "rest_framework",
     "fcm_django",
-    "rest_framework_jwt",#
+    "rest_framework_jwt",
     "django_extensions",
     "simple_history",
-    "adminPost", # admin broadcast poster/text/image and etc media to users
+    "adminPost",
 ]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
-        #'rest_framework.authentication.BasicAuthentication',
-        #'rest_framework.authentication.SessionAuthentication',
-        #'rest_framework_simplejwt.authentication.JWTTokenUserAuthentication',  # Use the correct class
-        #
-        #rest_framework_jwt originally 
+        #'rest_framework_simplejwt.authentication.JWTAuthentication', 
         # Other authentication classes if any
     ],
     
@@ -146,8 +142,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'America/Toronto' # timestamp in: adminPost
-
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 

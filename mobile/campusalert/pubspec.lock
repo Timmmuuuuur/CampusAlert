@@ -200,7 +200,11 @@ packages:
       sha256: ee67cb0715911d28db6bf4af1026078bd6f0128b07a5f66fb2ed94ec6783c09a
       url: "https://pub.dev"
     source: hosted
+<<<<<<< HEAD
     version: "1.18.0"
+=======
+    version: "1.17.2"
+>>>>>>> 3025d033c6a23c0fcdaf1702b56d31f87c7e510e
   convert:
     dependency: transitive
     description:
@@ -511,7 +515,11 @@ packages:
       sha256: a6e590c838b18133bb482a2745ad77c5bb7715fb0451209e1a7567d416678b8e
       url: "https://pub.dev"
     source: hosted
+<<<<<<< HEAD
     version: "1.10.0"
+=======
+    version: "1.9.1"
+>>>>>>> 3025d033c6a23c0fcdaf1702b56d31f87c7e510e
   mime:
     dependency: transitive
     description:
@@ -820,7 +828,11 @@ packages:
       sha256: ba2aa5d8cc609d96bbb2899c28934f9e1af5cddbd60a827822ea467161eb54e7
       url: "https://pub.dev"
     source: hosted
+<<<<<<< HEAD
     version: "2.1.2"
+=======
+    version: "2.1.1"
+>>>>>>> 3025d033c6a23c0fcdaf1702b56d31f87c7e510e
   stream_transform:
     dependency: transitive
     description:
@@ -860,7 +872,11 @@ packages:
       sha256: "5c2f730018264d276c20e4f1503fd1308dfbbae39ec8ee63c5236311ac06954b"
       url: "https://pub.dev"
     source: hosted
+<<<<<<< HEAD
     version: "0.6.1"
+=======
+    version: "0.6.0"
+>>>>>>> 3025d033c6a23c0fcdaf1702b56d31f87c7e510e
   timing:
     dependency: transitive
     description:
@@ -905,10 +921,17 @@ packages:
     dependency: transitive
     description:
       name: web
+<<<<<<< HEAD
       sha256: afe077240a270dcfd2aafe77602b4113645af95d0ad31128cc02bce5ac5d5152
       url: "https://pub.dev"
     source: hosted
     version: "0.3.0"
+=======
+      sha256: dc8ccd225a2005c1be616fe02951e2e342092edf968cf0844220383757ef8f10
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.4-beta"
+>>>>>>> 3025d033c6a23c0fcdaf1702b56d31f87c7e510e
   web_socket_channel:
     dependency: transitive
     description:
@@ -942,5 +965,9 @@ packages:
     source: hosted
     version: "3.1.2"
 sdks:
+<<<<<<< HEAD
   dart: ">=3.2.0-194.0.dev <4.0.0"
+=======
+  dart: ">=3.1.0-185.0.dev <4.0.0"
+>>>>>>> 3025d033c6a23c0fcdaf1702b56d31f87c7e510e
   flutter: ">=3.10.0"

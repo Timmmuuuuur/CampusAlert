@@ -13,6 +13,14 @@ import 'package:rxdart/rxdart.dart';
 import 'package:campusalert/CrimeHeatMap.dart';
 
 import 'login_page.dart';
+
+import 'firebase_options.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:rxdart/rxdart.dart';
+import 'package:campusalert/CrimeHeatMap.dart';
+
+import 'login_page.dart';
 import 'emergency_alert_page.dart';
 import 'package:campusalert/auth.dart';
 import 'package:campusalert/schemas/schema.dart';
@@ -22,9 +30,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:campusalert/AdminPost.dart';
 
 Future<void> main() async {
-  print("-------------------------------");
-  print(ApiConfig.baseUrl);
-   print("-------------------------------");
   // Flutter setup
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(

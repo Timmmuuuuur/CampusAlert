@@ -10,6 +10,7 @@ import 'package:campusalert/schemas/roomnode.dart';
 import 'package:campusalert/style/text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:campusalert/api_service.dart';
 
 List<AlertRoutePage> defaultPages() {
   return [

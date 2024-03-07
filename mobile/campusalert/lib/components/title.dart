@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+
 class Title extends StatelessWidget {
   
   final String text;

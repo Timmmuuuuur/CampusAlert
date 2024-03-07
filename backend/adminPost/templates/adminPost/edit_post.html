@@ -1,0 +1,26 @@
+{% extends 'adminPost_base.html' %}
+{% load static %}
+{% block title %}Edit Post{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" type="text/css" href="{% static 'adminPost/css/edit.css' %}">
+
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ form.as_p }}
+
+  <!-- Display current photo if available -->
+  {% if form.instance.photo %}
+  <p>Current Photo:</p>
+  <img src="{{ form.instance.photo.url }}" alt="Current Photo" class="current-photo">
+  {% endif %}
+
+  <!-- Input field for uploading a new photo -->
+  <div>
+    <label for="id_photo">Upload New Photo:</label>
+    {{ form.photo }}
+  </div>
+
+  <button type="submit">Save Changes</button>
+</form>
+{% endblock %}
