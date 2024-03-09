@@ -17,44 +17,46 @@ class AccountPage extends StatelessWidget {
     var fcmTokenString = appState.appContext.fcmToken ?? "[No token]";
     var schemaFetcher = context.watch<SchemaFetcher>();
 
-    return Padding(
-      padding: EdgeInsets.all(10.0),
-      child: Column(
-        children: [
-          SizedBox(height: 30),
-          LogoutButton(),
-          SizedBox(height: 10),
-          ElevatedButton(
-            onPressed: () => schemaFetcher.checkForUpdateAndUpdate(),
-            child: BodyText('Update database'),
-          ),
-          SizedBox(height: 30),
-          Container(
-            padding: EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.grey[200], // Light gray color
-              borderRadius: BorderRadius.circular(8),
+    return Center( // Wrap with Center widget
+      child: Padding(
+        padding: EdgeInsets.all(10.0),
+        child: Column(
+          children: [
+            SizedBox(height: 30),
+            LogoutButton(),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () => schemaFetcher.checkForUpdateAndUpdate(),
+              child: BodyText('Update database'),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "FCM Token",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold, // Make "FCM Token" bold
-                  ),
-                ),
-                Text(
-                  fcmTokenString,
-                  style: TextStyle(
-                    fontWeight: FontWeight.normal, // Make FCM token bold
-                  ),
-                ),
-              ],
-            ),
-          )
-        ],
-      )
+            SizedBox(height: 30),
+            Container(
+              padding: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.grey[200], // Light gray color
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Text(
+                  //   "FCM Token",
+                  //   style: TextStyle(
+                  //     fontWeight: FontWeight.bold, // Make "FCM Token" bold
+                  //   ),
+                  // ),
+                  // Text(
+                  //   fcmTokenString,
+                  //   style: TextStyle(
+                  //     fontWeight: FontWeight.normal, // Make FCM token bold
+                  //   ),
+                  // ),
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 }
