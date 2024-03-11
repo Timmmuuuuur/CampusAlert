@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     "django_extensions",
     "simple_history",
     "adminPost",
+    "alarm",
 ]
 
 REST_FRAMEWORK = {

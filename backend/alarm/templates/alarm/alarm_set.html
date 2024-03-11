@@ -1,0 +1,57 @@
+<!-- alarm_control.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alarm Control</title>
+</head>
+<body>
+    <h1>Alarm Control</h1>
+    <form id="alarm-form">
+        {% csrf_token %}
+        <button type="submit" id="activate-btn">Activate Alarm</button>
+        <button type="button" id="deactivate-btn">Deactivate Alarm</button>
+    </form>
+
+    <script>
+        document.getElementById('alarm-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            fetch('/api/alarm/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({})
+            }).then(function(response) {
+                if (response.ok) {
+                    alert('Alarm activated');
+                } else {
+                    alert('Failed to activate alarm');
+                }
+            }).catch(function(error) {
+                console.error('Error:', error);
+            });
+        });
+
+        document.getElementById('deactivate-btn').addEventListener('click', function() {
+            fetch('/api/alarm/', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            }).then(function(response) {
+                if (response.ok) {
+                    alert('Alarm deactivated');
+                } else {
+                    alert('Failed to deactivate alarm');
+                }
+            }).catch(function(error) {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
