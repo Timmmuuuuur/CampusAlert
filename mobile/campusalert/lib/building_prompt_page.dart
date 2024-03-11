@@ -1,10 +1,13 @@
 import 'package:campusalert/floor_prompt_page.dart';
 import 'package:campusalert/style/text.dart';
 import 'package:flutter/material.dart';
+import 'package:campusalert/api_config.dart';
+import 'package:http/http.dart' as http;
+
 import 'package:provider/provider.dart';
 
 import 'main.dart';
-import 'package:http/http.dart' as http;
+
 
 
 
@@ -66,7 +69,14 @@ class _BuildingPromptPageState extends State<BuildingPromptPage> {
 }
 
 void sendMessage(String message) async {
-  final apiUrl = 'http://127.0.0.1:8080/notificationtest';
+
+
+  // Make the HTTP GET request
+  const String baseUrl =  ApiConfig.baseUrl; // Assuming cc.apiBaseUrl is a valid base URL
+
+  // Construct the complete URL
+  const String apiUrl = '$baseUrl/notificationtest';
+  //const apiUrl = 'http://127.0.0.1:8080/notificationtest';
   
   try {
     final response = await http.post(

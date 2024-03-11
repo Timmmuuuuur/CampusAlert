@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:campusalert/api_config.dart';
 
 class CrimeHeatMap extends StatefulWidget {
   @override
@@ -17,7 +18,15 @@ class _CrimeHeatMapState extends State<CrimeHeatMap> {
   }
 
   Future<void> fetchData() async {
-    final response = await http.get(Uri.parse('http://10.31.18.0:8080/adminPost/api/building_crime/'));
+
+  const String baseUrl = ApiConfig.baseUrl; // Assuming cc.apiBaseUrl is a valid base URL
+
+  // Construct the complete URL
+  const String url = '$baseUrl/adminPost/api/building_crime/';
+
+  // Make the HTTP GET request
+  final response = await http.get(Uri.parse(url));
+  
 
     if (response.statusCode == 200) {
       setState(() {

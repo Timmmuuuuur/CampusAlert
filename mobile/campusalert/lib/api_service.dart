@@ -4,10 +4,11 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 
 import 'package:campusalert/auth.dart';
 import 'package:campusalert/local_store.dart';
+import 'package:campusalert/api_config.dart';
 
 class APIService {
   // TODO: Development URL. Change this to production later.
-  static const String baseURL = "10.0.2.2:8080";
+  static final String baseURL = ApiConfig.u1;
 
   static Future<http.Response> put(
       String path, Map<String, String> headers, String body) {
