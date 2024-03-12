@@ -251,11 +251,16 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> updateAlertPresent() async {
-    var alert = await SyncAlert.getActive();
-    alertPresent = (alert != null) ? true : false;
-    if (alert != null) {
-      lastMessage =
-          "${alert.threat?.name ?? 'unknown threat'} in ${alert.building?.name ?? 'unknown building'}, ${alert.floor?.name ?? 'unknown floor'}, ${alert.roomNode?.name ?? 'unknown room'}.";
+    var alertbool = await SyncAlert.getActiveBool();
+    if (alertbool==true){
+        print("====!!! main gets alert == true !!!====");
+        var alert = await SyncAlert.getActive();
+        alertPresent = (alert != null) ? true : false;
+        if (alert != null) {
+          lastMessage =
+              "${alert.threat?.name ?? 'unknown threat'} in ${alert.building?.name ?? 'unknown building'}, ${alert.floor?.name ?? 'unknown floor'}, ${alert.roomNode?.name ?? 'unknown room'}.";
+        }
+
     }
 
     notifyListeners();

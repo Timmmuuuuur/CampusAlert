@@ -69,8 +69,33 @@ class SyncAlert {
     _timer?.cancel();
   }
 
+
+  // Method to fetch boolean active alert 
+  static Future<bool> getActiveBool() async { //Eva: parse out active_alert to see if alert is toggled on or of
+    print("-----reading from active----");
+    bool activeAlert=false;
+
+    var m = await APIService.getCommon("emergency/alert/get-active/");
+    if (m != null && m is Map<String, dynamic>) {
+      // Parse the JSON response into a Map<String, dynamic>
+    Map<String, dynamic> response = m;
+
+    // Access the value of "active_alert" from the map
+    bool activeAlert = response['active_alert'];
+
+    // Now you have the value of "active_alert"
+    print(activeAlert);
+
+    }
+    
+    startFetchingActive(); // Eva: a class that calls on itslef, this function calls it so that a infinte paluse sent 
+    return activeAlert;
+  }
+
+
+
   // Method to fetch the active alert
-  static Future<SyncAlert?> getActive() async {
+  static Future<SyncAlert?> getActive() async { // Eva: Actual Json parsing of alert payload,call this when seeing getActiveBool==true
     print("-----reading from active----");
 
     var m = await APIService.getCommon("emergency/alert/get-active/");
@@ -87,7 +112,7 @@ class SyncAlert {
     }
     
   
-    startFetchingActive();
+    //startFetchingActive();
     return m['active_alert'] ? await SyncAlert.deserialize(m) : null;
   }
 
