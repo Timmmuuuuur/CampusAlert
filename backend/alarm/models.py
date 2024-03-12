@@ -2,4 +2,7 @@
 from django.db import models
 
 class Alarm(models.Model):
-    alarm1 = models.BooleanField(default=False)
+    active = models.BooleanField(default=False)
+
+# Create an instance of Alarm
+#alarm1 = Alarm.objects.get(pk=1)

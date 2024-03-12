@@ -8,19 +8,20 @@ from .models import Alarm
 
 class AlarmStatus(APIView):
     def get(self, request):
-        alarm = Alarm.objects.first()  # Assuming only one alarm object exists
-        return Response({'active': alarm.active})
+        alarm1 = Alarm.objects.first()  # Assuming only one alarm object exists
+        alarm1 = Alarm.objects.first()  # Assuming only one alarm object exists
+        return Response({'active': alarm1.active})
 
     def post(self, request):
-        alarm = Alarm.objects.first()  # Assuming only one alarm object exists
-        alarm.active = True
-        alarm.save()
+        alarm1 = Alarm.objects.first()  # Assuming only one alarm object exists
+        alarm1.active = True
+        alarm1.save()
         return Response({'message': 'Alarm activated'}, status=status.HTTP_200_OK)
 
     def delete(self, request):
-        alarm = Alarm.objects.first()  # Assuming only one alarm object exists
-        alarm.active = False
-        alarm.save()
+        alarm1 = Alarm.objects.first()  # Assuming only one alarm object exists
+        alarm1.active = False
+        alarm1.save()
         return Response({'message': 'Alarm deactivated'}, status=status.HTTP_200_OK)
 
 class AlarmControlView(TemplateView):
