@@ -41,11 +41,14 @@ class EmergencyAlertPage extends StatelessWidget {
                   ),
                   SizedBox(height: 20),
                   HighlightedText(
-                      'ONLY USE THIS IF ANYONE MAY BE IN IMMEDIATE/POTENTIAL DANGER.'
+                    'ONLY USE THIS IF ANYONE MAY BE IN IMMEDIATE/POTENTIAL DANGER',
+                    style: TextStyle(
+                      color: Colors.purple, // Change the color to purple
+                    ),
                   ),
                   SizedBox(height: 20),
                   HighlightedText(
-                      'KNOWINGLY ACTIVATING A FALSE ALARM WILL RESULT IN DISCIPLINARY ACTIONS.'
+                      'KNOWINGLY ACTIVATING A FALSE ALARM WILL RESULT IN DISCIPLINARY ACTIONS.YOU WILL BE FINED A LOT OF CASH.'
                   ),
                 ]
               ),
