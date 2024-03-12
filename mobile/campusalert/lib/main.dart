@@ -11,8 +11,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:campusalert/CrimeHeatMap.dart';
-
+import 'package:campusalert/alarm.dart'; // Importing the Alarm class: toggle test
 import 'login_page.dart';
+
 
 import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -285,9 +286,14 @@ class NavigationRoot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<AppState>();
+    var alarm = Alarm(); //test emergency broadcast 
 
     return Scaffold(
-      body: SafeArea(child: _pages[appState.selectedPageIndex]),
+      body: SafeArea(
+        
+        child: 
+        alarm.dataListenerWidget != null ?? alarm.dataListenerWidget : _pages[appState.selectedPageIndex],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: appState.selectedPageIndex,
