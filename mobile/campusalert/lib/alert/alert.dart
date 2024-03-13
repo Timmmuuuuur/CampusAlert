@@ -6,6 +6,7 @@ import 'package:campusalert/schemas/building.dart';
 import 'package:campusalert/schemas/floor.dart';
 import 'package:campusalert/schemas/roomnode.dart';
 import 'package:http/http.dart' as http;
+import 'package:campusalert/main.dart';
 
 class SyncAlert {
   final int id;
@@ -81,14 +82,13 @@ class SyncAlert {
     Map<String, dynamic> response = m;
 
     // Access the value of "active_alert" from the map
-    bool activeAlert = response['active_alert'];
+    activeAlert = response['active_alert'];
 
     // Now you have the value of "active_alert"
     print(activeAlert);
-
     }
     
-    startFetchingActive(); // Eva: a class that calls on itslef, this function calls it so that a infinte paluse sent 
+    // startFetchingActive(); // Eva: a class that calls on itslef, this function calls it so that a infinte paluse sent 
     return activeAlert;
   }
 
@@ -108,6 +108,9 @@ class SyncAlert {
 
     // Now you have the value of "active_alert"
     print(activeAlert);
+
+    //do something with the active state
+    // notifyListeners();
 
     }
     

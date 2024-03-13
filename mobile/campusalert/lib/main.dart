@@ -29,6 +29,8 @@ import 'package:drift_db_viewer/drift_db_viewer.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:campusalert/AdminPost.dart';
 
+import 'dart:async'; // Import the dart:async library for using Timer
+
 Future<void> main() async {
   // Flutter setup
   WidgetsFlutterBinding.ensureInitialized();
@@ -204,7 +206,26 @@ class AppState extends ChangeNotifier {
     appContext.messageStreamController
         .listen((message) => onNewMessage(message));
     
-    updateAlertPresent();
+    startFetchingActive();
+  }
+
+  static Timer? _timer; // Timer object to schedule periodic execution
+
+  // Method to start periodic execution of getActive()
+  void startFetchingActive() {
+    // Cancel the previous timer if it's active
+    _timer?.cancel();
+    // Schedule periodic execution of getActive() every couple of seconds
+    _timer = Timer.periodic(Duration(seconds: 2), (Timer timer) {
+      alertPresent = false;//not sure about this one
+      updateAlertPresent();
+    });
+  }
+
+  // Method to stop periodic execution of getActive()
+  static void stopFetchingActive() {
+    // Cancel the timer
+    _timer?.cancel();
   }
 
   // emergency information
