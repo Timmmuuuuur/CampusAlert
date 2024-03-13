@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:campusalert/api_service.dart';
 
+
 List<AlertRoutePage> defaultPages() {
   return [
     ThreatTypePage(),
@@ -27,6 +28,7 @@ class AlertRoutePage extends StatelessWidget {
   final Widget Function(AppState) form;
   final bool Function(AppState) nextButtonEnabledCallback;
   final Future<void> Function(AppState) onNextPageCallback;
+  final bool showConfirmationPopup;
 
   AlertRoutePage? nextPage;
 
@@ -36,6 +38,7 @@ class AlertRoutePage extends StatelessWidget {
     required this.form,
     required this.nextButtonEnabledCallback,
     required this.onNextPageCallback,
+    this.showConfirmationPopup = false,
   });
 
   @override
@@ -64,10 +67,26 @@ class AlertRoutePage extends StatelessWidget {
                   ElevatedButton(
                     onPressed: nextButtonEnabledCallback(appState)
                         ? () async {
-                            if (nextPage == null) {
+                            if (showConfirmationPopup) {
+                              bool confirm = await showLeavePageConfirmationDialog(context);
+                              if (confirm) {
+                                await onNextPageCallback(appState);
+                                // test print to logs
+                                print('---abcd---');
+                                nextPage = appState.alertRoute.next(context);
+                              }
+                            } else {
                               await onNextPageCallback(appState);
+                              // test print to logs
+                              print('---abcd---');
                               nextPage = appState.alertRoute.next(context);
                             }
+                            // if (nextPage == null) {
+                            //   await onNextPageCallback(appState);
+                            //   //test print to logs
+                            //   print('---abcd---');
+                            //   nextPage = appState.alertRoute.next(context);
+                            // }
                           }
                         : null,
                     child: BodyText('Next Page'),
@@ -435,7 +454,35 @@ class EmergencyRoutePage extends AlertRoutePage {
               }
             },
           ),
+          showConfirmationPopup: true, // Set to true to show the confirmation popup
           nextButtonEnabledCallback: (appState) => true,
           onNextPageCallback: (_) async {},
         );
 }
+
+Future<bool> showLeavePageConfirmationDialog(BuildContext context) async {
+  return await showDialog<bool>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text("Confirmation"),
+        content: Text("Are you sure you want to leave this page?"),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(false); // No, don't leave
+            },
+            child: Text("No"),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(true); // Yes, leave
+            },
+            child: Text("Yes"),
+          ),
+        ],
+      );
+    },
+  ) ?? false;
+}
+
