@@ -204,8 +204,22 @@ class AppState extends ChangeNotifier {
     appContext.messageStreamController
         .listen((message) => onNewMessage(message));
     
-    updateAlertPresent();
+    // Call the asynchronous method in an initializer list
+    _initializeAsync();
   }
+
+
+  Future<void> _initializeAsync() async {
+    await updateAlertPresent();
+    notifyListeners();
+  }
+
+  // AppState({required this.appContext}) async {
+  //   appContext.messageStreamController
+  //       .listen((message) => onNewMessage(message));
+    
+  //   await updateAlertPresent();
+  // }
 
   // emergency information
 
