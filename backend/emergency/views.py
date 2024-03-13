@@ -390,19 +390,36 @@ def _update_alert(request, pk):
 def check_active_alert(request):
     if Alert.objects.filter(is_active=True).exists():
         return Response({"active_alert": True})
+    print("-------------Alert DNE---------------")
     return Response({"active_alert": False})
 
+
+# @api_view(['GET'])
+# def get_active_alert(request):
+#     try:
+#         active_alert = Alert.objects.get(is_active=True)
+#         serializer = AlertCompleteSerializer(active_alert)
+#         data = serializer.data
+#         data['active_alert'] = True
+#         return Response(data)
+#     except Alert.DoesNotExist:
+#         print("-------------Alert DNE---------------")
+#         return Response({'active_alert': False})
 
 @api_view(['GET'])
 def get_active_alert(request):
     try:
-        active_alert = Alert.objects.get(is_active=True)
-        serializer = AlertCompleteSerializer(active_alert)
-        data = serializer.data
-        data['active_alert'] = True
-        return Response(data)
-    except Alert.DoesNotExist:
-        return Response({'active_alert': False})
+        active_alerts = Alert.objects.filter(is_active=True)
+        if active_alerts.exists():  # Check if any active alerts exist
+            serializer = AlertCompleteSerializer(active_alerts, many=True)
+            data = serializer.data
+            for alert_data in data:
+                alert_data['active_alert'] = True
+            return Response(data)
+        else:
+            return Response({'active_alert': False})
+    except Exception as e:
+        return Response({'error': str(e)}, status=500)
 
 
 @api_view(['PUT'])
